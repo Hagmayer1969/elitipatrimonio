@@ -282,11 +282,12 @@ function renderUsuarios() {
     u5: "ELITI 50+",
   };
 
-  document.getElementById("userGrid").innerHTML = list
-    .map((u, i) => {
-      const eqs = getEquipsByUser(u.id);
-      const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-      return `
+  document.getElementById("userGrid").innerHTML =
+    list
+      .map((u, i) => {
+        const eqs = getEquipsByUser(u.id);
+        const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
+        return `
       <div class="card" style="padding:18px">
         <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
           <div class="user-avatar" style="background:linear-gradient(135deg,${color},${color}bb)">${u.nome[0]}</div>
@@ -319,8 +320,8 @@ function renderUsuarios() {
           <button class="btn btn-danger btn-sm" onclick="deleteAluno('${u.id}')" title="Excluir aluno">🗑</button>
         </div>
       </div>`;
-    })
-    .join("") ||
+      })
+      .join("") ||
     `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
     <div style="font-size:40px;margin-bottom:14px;opacity:0.3">👤</div>
     <div style="font-family:'Syne',sans-serif;font-size:17px">Nenhum aluno encontrado</div>
@@ -332,9 +333,10 @@ async function deleteAluno(uid) {
   const u = getUsuario(uid);
   if (!u) return;
   const eqs = getEquipsByUser(uid);
-  const msg = eqs.length > 0
-    ? `Excluir "${u.nome}"?\n\nAtenção: ${eqs.length} equipamento(s) serão devolvidos (status → Disponível).`
-    : `Excluir "${u.nome}"?`;
+  const msg =
+    eqs.length > 0
+      ? `Excluir "${u.nome}"?\n\nAtenção: ${eqs.length} equipamento(s) serão devolvidos (status → Disponível).`
+      : `Excluir "${u.nome}"?`;
   if (!confirm(msg)) return;
 
   // Devolve equipamentos antes de excluir
@@ -423,7 +425,10 @@ function fecharEditAluno() {
 
 async function salvarEdicaoAluno(uid) {
   const nome = document.getElementById("editNome").value.trim();
-  if (!nome) { showToast("⚠ Nome é obrigatório."); return; }
+  if (!nome) {
+    showToast("⚠ Nome é obrigatório.");
+    return;
+  }
 
   const u = getUsuario(uid);
   if (!u) return;
@@ -431,11 +436,11 @@ async function salvarEdicaoAluno(uid) {
   Object.assign(u, {
     nome,
     email: document.getElementById("editEmail").value.trim(),
-    tel:   document.getElementById("editTel").value.trim(),
+    tel: document.getElementById("editTel").value.trim(),
     unidade: document.getElementById("editUnidade").value,
     turma: document.getElementById("editTurma").value.trim(),
     ativo: document.getElementById("editAtivo").value === "true",
-    obs:   document.getElementById("editObs").value.trim(),
+    obs: document.getElementById("editObs").value.trim(),
   });
 
   const ok = await dbSalvarUsuario(u);
@@ -445,4 +450,3 @@ async function salvarEdicaoAluno(uid) {
   renderUsuarios();
   showToast(`✓ ${nome} atualizado!`);
 }
-
