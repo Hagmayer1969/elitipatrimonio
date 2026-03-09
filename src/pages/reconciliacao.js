@@ -134,7 +134,10 @@ function importarCSVEpanel(input) {
   const reader = new FileReader();
   reader.onload = (ev) => {
     const text = ev.target.result;
-    const linhas = text.split("\n").map(l => l.trim()).filter(Boolean);
+    const linhas = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (linhas.length < 2) {
       logEl.style.color = "#EF4444";
       logEl.textContent = "❌ Arquivo vazio ou inválido.";
@@ -143,24 +146,29 @@ function importarCSVEpanel(input) {
 
     // Detectar delimitador: vírgula ou ponto-e-vírgula
     const delim = linhas[0].includes(";") ? ";" : ",";
-    const headers = linhas[0].split(delim).map(h => h.trim().toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")  // remove acentos
-      .replace(/[^a-z0-9_]/g, ""));                       // só alfanum
+    const headers = linhas[0].split(delim).map((h) =>
+      h
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // remove acentos
+        .replace(/[^a-z0-9_]/g, ""),
+    ); // só alfanum
 
     // Mapear colunas aceitas
     const col = (nomes) => {
       for (const n of nomes) {
-        const i = headers.findIndex(h => h.includes(n));
+        const i = headers.findIndex((h) => h.includes(n));
         if (i >= 0) return i;
       }
       return -1;
     };
 
-    const iPatrimonio  = col(["patrimonio", "tombamento", "codigo", "pat"]);
-    const iNome        = col(["nome", "descricao", "bem", "equipamento"]);
-    const iSerie       = col(["serie", "numero", "serial"]);
+    const iPatrimonio = col(["patrimonio", "tombamento", "codigo", "pat"]);
+    const iNome = col(["nome", "descricao", "bem", "equipamento"]);
+    const iSerie = col(["serie", "numero", "serial"]);
     const iResponsavel = col(["responsavel", "usuario", "aluno", "pessoa"]);
-    const iEpanelId    = col(["id", "epanel", "identificador"]);
+    const iEpanelId = col(["id", "epanel", "identificador"]);
 
     if (iPatrimonio < 0 && iNome < 0) {
       logEl.style.color = "#EF4444";
@@ -168,23 +176,31 @@ function importarCSVEpanel(input) {
       return;
     }
 
-    let novos = 0, atualizados = 0, naoEncontrados = [];
+    let novos = 0,
+      atualizados = 0,
+      naoEncontrados = [];
 
-    linhas.slice(1).forEach(linha => {
+    linhas.slice(1).forEach((linha) => {
       if (!linha) return;
-      const cols = linha.split(delim).map(c => c.trim().replace(/^"|"$/g, ""));
+      const cols = linha
+        .split(delim)
+        .map((c) => c.trim().replace(/^"|"$/g, ""));
       const patrimonio = iPatrimonio >= 0 ? cols[iPatrimonio] : "";
-      const nome       = iNome >= 0 ? cols[iNome] : "";
-      const serie      = iSerie >= 0 ? cols[iSerie] : "";
-      const respNome   = iResponsavel >= 0 ? cols[iResponsavel] : "";
-      const epId       = iEpanelId >= 0 ? cols[iEpanelId] : "";
+      const nome = iNome >= 0 ? cols[iNome] : "";
+      const serie = iSerie >= 0 ? cols[iSerie] : "";
+      const respNome = iResponsavel >= 0 ? cols[iResponsavel] : "";
+      const epId = iEpanelId >= 0 ? cols[iEpanelId] : "";
 
       // Tentar encontrar equipamento existente por patrimônio ou série
-      let eq = equipamentos.find(e =>
-        patrimonio && e.patrimonio.toLowerCase() === patrimonio.toLowerCase()
-      ) || equipamentos.find(e =>
-        serie && e.serie.toLowerCase() === serie.toLowerCase()
-      );
+      let eq =
+        equipamentos.find(
+          (e) =>
+            patrimonio &&
+            e.patrimonio.toLowerCase() === patrimonio.toLowerCase(),
+        ) ||
+        equipamentos.find(
+          (e) => serie && e.serie.toLowerCase() === serie.toLowerCase(),
+        );
 
       if (!eq && nome) {
         // Criar novo equipamento se não existe
@@ -218,9 +234,10 @@ function importarCSVEpanel(input) {
 
       // Vincular responsável por nome (busca parcial)
       if (respNome && eq) {
-        const match = usuarios.find(u =>
-          u.nome.toLowerCase().includes(respNome.toLowerCase()) ||
-          respNome.toLowerCase().includes(u.nome.split(" ")[0].toLowerCase())
+        const match = usuarios.find(
+          (u) =>
+            u.nome.toLowerCase().includes(respNome.toLowerCase()) ||
+            respNome.toLowerCase().includes(u.nome.split(" ")[0].toLowerCase()),
         );
         if (match) {
           eq.usuario = match.id;

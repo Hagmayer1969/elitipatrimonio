@@ -47,13 +47,14 @@ function renderEquipamentos() {
             style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);cursor:pointer;transition:background 0.15s"
             onmouseover="this.style.background='rgba(249,115,22,0.07)'"
             onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-            ${u
-              ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
+            ${
+              u
+                ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
                  <div style="flex:1;min-width:0">
                    <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.nome}</div>
                    <div style="font-size:10px;color:var(--t3)">👤 Responsável · clique p/ trocar</div>
                  </div>`
-              : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">➕</div>
+                : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">➕</div>
                  <div style="font-size:12px;color:var(--t3)">Sem responsável — clique p/ atribuir</div>`
             }
             <span style="font-size:14px;opacity:0.4">✎</span>
@@ -84,7 +85,10 @@ function devolverEquipamento(id) {
   const e = equipamentos.find((x) => x.id === id);
   if (!e) return;
   const u = getUsuario(e.usuario);
-  if (!confirm(`Confirmar devolução de "${e.nome}"${u ? ` por ${u.nome}` : ""}?`)) return;
+  if (
+    !confirm(`Confirmar devolução de "${e.nome}"${u ? ` por ${u.nome}` : ""}?`)
+  )
+    return;
   e.usuario = "";
   e.status = "disponivel";
   movimentacoes.unshift({
@@ -113,7 +117,8 @@ function abrirTrocaResponsavel(eqId) {
     return a.nome.localeCompare(b.nome, "pt-BR");
   });
 
-  const opcoesUnidade = unidades.find(x => x.id === e.unidade)?.nome.split(" — ")[0] || "";
+  const opcoesUnidade =
+    unidades.find((x) => x.id === e.unidade)?.nome.split(" — ")[0] || "";
 
   const html = `
     <div class="modal-bg" id="trocaModal" onclick="this===event.target&&fecharTrocaModal()" style="display:flex">
@@ -128,13 +133,17 @@ function abrirTrocaResponsavel(eqId) {
           <div style="font-size:11px;color:var(--t3);margin-bottom:6px">
             ${e.patrimonio} · ${opcoesUnidade}
           </div>
-          ${u ? `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);margin-bottom:14px">
+          ${
+            u
+              ? `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);margin-bottom:14px">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white">${u.nome[0]}</div>
             <div>
               <div style="font-size:13px;font-weight:500">${u.nome}</div>
               <div style="font-size:10px;color:var(--t3)">Responsável atual</div>
             </div>
-          </div>` : `<div style="font-size:12px;color:var(--t3);margin-bottom:14px;font-style:italic">Nenhum responsável atribuído</div>`}
+          </div>`
+              : `<div style="font-size:12px;color:var(--t3);margin-bottom:14px;font-style:italic">Nenhum responsável atribuído</div>`
+          }
 
           <div class="label">Novo responsável</div>
           <input class="input" id="trocaBusca" placeholder="Filtrar aluno..." oninput="filtrarTrocaAlunos()" style="margin-bottom:8px">
@@ -149,10 +158,14 @@ function abrirTrocaResponsavel(eqId) {
                 <div style="font-size:10px;color:var(--t3)">Status muda para Disponível</div>
               </div>
             </div>
-            ${sorted.map((usr, i) => {
-              const uniNome = unidades.find(x => x.id === usr.unidade)?.nome.split(" — ")[0] || "";
-              const isCurrent = usr.id === e.usuario;
-              return `<div onclick="${isCurrent ? '' : `confirmarTrocaResponsavel('${eqId}','${usr.id}')`}"
+            ${sorted
+              .map((usr, i) => {
+                const uniNome =
+                  unidades
+                    .find((x) => x.id === usr.unidade)
+                    ?.nome.split(" — ")[0] || "";
+                const isCurrent = usr.id === e.usuario;
+                return `<div onclick="${isCurrent ? "" : `confirmarTrocaResponsavel('${eqId}','${usr.id}')`}"
                 data-nome="${usr.nome.toLowerCase()}"
                 style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;border:1px solid ${isCurrent ? "rgba(249,115,22,0.35)" : "rgba(255,255,255,0.07)"};background:${isCurrent ? "rgba(249,115,22,0.08)" : "rgba(255,255,255,0.02)"};cursor:${isCurrent ? "default" : "pointer"};transition:background 0.12s"
                 ${!isCurrent ? `onmouseover="this.style.background='rgba(249,115,22,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'"` : ""}>
@@ -162,7 +175,8 @@ function abrirTrocaResponsavel(eqId) {
                   <div style="font-size:10px;color:var(--t3)">${uniNome} · ${usr.turma}</div>
                 </div>
               </div>`;
-            }).join("")}
+              })
+              .join("")}
           </div>
         </div>
       </div>
@@ -173,7 +187,7 @@ function abrirTrocaResponsavel(eqId) {
 
 function filtrarTrocaAlunos() {
   const busca = document.getElementById("trocaBusca").value.toLowerCase();
-  document.querySelectorAll("#trocaLista [data-nome]").forEach(el => {
+  document.querySelectorAll("#trocaLista [data-nome]").forEach((el) => {
     el.style.display = el.dataset.nome.includes(busca) ? "flex" : "none";
   });
 }
@@ -202,9 +216,10 @@ function confirmarTrocaResponsavel(eqId, novoUid) {
   renderEquipamentos();
   renderDashboard();
   const novoU = getUsuario(novoUid);
-  showToast(novoUid
-    ? `✓ ${e.nome} atribuído a ${novoU?.nome}`
-    : `↩ ${e.nome} devolvido e disponível`
+  showToast(
+    novoUid
+      ? `✓ ${e.nome} atribuído a ${novoU?.nome}`
+      : `↩ ${e.nome} devolvido e disponível`,
   );
 }
 
