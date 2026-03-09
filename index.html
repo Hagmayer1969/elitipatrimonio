@@ -23,7 +23,13 @@
       <!-- ========== SIDEBAR ========== -->
       <aside class="sidebar" id="sidebar">
         <div class="brand">
-          <div class="brand-logo">ELITI</div>
+          <div class="brand-logo">
+            <img
+              src="assets/images/eliti.jpeg"
+              alt="ELITI"
+              class="brand-logo-img"
+            />
+          </div>
           <div class="brand-sub">Gestão de Patrimônio</div>
         </div>
 
@@ -84,13 +90,19 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Dashboard</div>
             </div>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('movimentacao')"
+              onclick="openModal('equipamento')"
             >
-              + Movimentação
+              + Equipamento
             </button>
           </div>
           <div class="content">
@@ -177,6 +189,12 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Equipamentos</div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center">
@@ -253,6 +271,12 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Alunos</div>
             </div>
             <button
@@ -311,6 +335,12 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Unidades</div>
             </div>
             <button
@@ -344,6 +374,12 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Movimentações</div>
             </div>
             <button
@@ -387,6 +423,12 @@
               >
                 ☰
               </button>
+              <img
+                src="assets/images/eliti.jpeg"
+                alt="ELITI"
+                class="topbar-logo"
+                onclick="openSidebar()"
+              />
               <div class="page-title">Reconciliação ePainel</div>
             </div>
           </div>
@@ -587,28 +629,110 @@
     <!-- ========== MODAIS ========== -->
 
     <!-- Modal Câmera — fora de qualquer modal/overflow para position:fixed funcionar -->
-    <div id="cameraModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:9990;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px">
-      <div style="font-family:'Syne',sans-serif;font-size:16px;color:var(--t1);font-weight:700">📷 Tirar Foto</div>
-      <div style="position:relative;border-radius:14px;overflow:hidden;max-width:min(480px,90vw);width:100%">
-        <video id="cameraStream" autoplay playsinline muted
-          style="width:100%;display:block;background:#000;aspect-ratio:4/3;object-fit:cover;border-radius:12px">
-        </video>
-        <button id="btnFlipCamera" onclick="trocarCamera()"
-          style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center">
+    <div
+      id="cameraModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.93);
+        z-index: 9990;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+      "
+    >
+      <div
+        style="
+          font-family: &quot;Syne&quot;, sans-serif;
+          font-size: 16px;
+          color: var(--t1);
+          font-weight: 700;
+        "
+      >
+        📷 Tirar Foto
+      </div>
+      <div
+        style="
+          position: relative;
+          border-radius: 14px;
+          overflow: hidden;
+          max-width: min(480px, 90vw);
+          width: 100%;
+        "
+      >
+        <video
+          id="cameraStream"
+          autoplay
+          playsinline
+          muted
+          style="
+            width: 100%;
+            display: block;
+            background: #000;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 12px;
+          "
+        ></video>
+        <button
+          id="btnFlipCamera"
+          onclick="trocarCamera()"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+          "
+        >
           🔄
         </button>
       </div>
-      <div style="display:flex;gap:16px;align-items:center">
-        <button onclick="fecharCamera()" class="btn btn-ghost">✕ Cancelar</button>
-        <button onclick="capturarFoto()"
-          style="width:68px;height:68px;border-radius:50%;background:var(--orange);border:4px solid rgba(255,255,255,0.3);cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(249,115,22,0.35);flex-shrink:0">
+      <div style="display: flex; gap: 16px; align-items: center">
+        <button onclick="fecharCamera()" class="btn btn-ghost">
+          ✕ Cancelar
+        </button>
+        <button
+          onclick="capturarFoto()"
+          style="
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: var(--orange);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.35);
+            flex-shrink: 0;
+          "
+        >
           📸
         </button>
-        <button onclick="document.getElementById('fotoInput').click();fecharCamera();" class="btn btn-ghost">
+        <button
+          onclick="
+            document.getElementById('fotoInput').click();
+            fecharCamera();
+          "
+          class="btn btn-ghost"
+        >
           🖼 Galeria
         </button>
       </div>
-      <canvas id="cameraCanvas" style="display:none"></canvas>
+      <canvas id="cameraCanvas" style="display: none"></canvas>
     </div>
 
     <!-- Modal Equipamento -->
@@ -637,29 +761,75 @@
           <div class="photo-zone-wrapper" id="photoZoneWrapper">
             <div class="photo-zone" id="photoZone">
               <div class="photo-zone-empty" id="photoZoneEmpty">
-                <div style="font-size:36px;margin-bottom:8px;opacity:0.4">📷</div>
-                <div style="font-size:13px;color:var(--t3)">Adicionar foto do equipamento</div>
-                <div style="font-size:11px;color:var(--t3);opacity:0.7;margin-top:4px">Clique em uma opção abaixo</div>
+                <div style="font-size: 36px; margin-bottom: 8px; opacity: 0.4">
+                  📷
+                </div>
+                <div style="font-size: 13px; color: var(--t3)">
+                  Adicionar foto do equipamento
+                </div>
+                <div
+                  style="
+                    font-size: 11px;
+                    color: var(--t3);
+                    opacity: 0.7;
+                    margin-top: 4px;
+                  "
+                >
+                  Clique em uma opção abaixo
+                </div>
               </div>
-              <img id="photoPreviewImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+              <img
+                id="photoPreviewImg"
+                src=""
+                alt=""
+                style="
+                  display: none;
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                "
+              />
               <!-- Botão remover (só aparece com foto) -->
-              <button class="photo-remove-btn" id="photoRemoveBtn" onclick="removerFotoEq()" style="display:none" title="Remover foto">✕</button>
+              <button
+                class="photo-remove-btn"
+                id="photoRemoveBtn"
+                onclick="removerFotoEq()"
+                style="display: none"
+                title="Remover foto"
+              >
+                ✕
+              </button>
             </div>
             <!-- Botões de ação abaixo da zona -->
             <div class="photo-actions" id="photoActions">
-              <button class="photo-action-btn" id="btnCamera" onclick="abrirCamera()" title="Tirar foto com câmera">
-                <span style="font-size:18px">📷</span>
+              <button
+                class="photo-action-btn"
+                id="btnCamera"
+                onclick="abrirCamera()"
+                title="Tirar foto com câmera"
+              >
+                <span style="font-size: 18px">📷</span>
                 <span>Câmera</span>
               </button>
-              <button class="photo-action-btn" onclick="document.getElementById('fotoInput').click()" title="Escolher da galeria">
-                <span style="font-size:18px">🖼</span>
+              <button
+                class="photo-action-btn"
+                onclick="document.getElementById('fotoInput').click()"
+                title="Escolher da galeria"
+              >
+                <span style="font-size: 18px">🖼</span>
                 <span>Galeria</span>
               </button>
             </div>
           </div>
 
           <!-- Input galeria -->
-          <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="previewFotoArquivo(event)">
+          <input
+            type="file"
+            id="fotoInput"
+            accept="image/*"
+            style="display: none"
+            onchange="previewFotoArquivo(event)"
+          />
 
           <div class="grid-2">
             <div class="col-full">
