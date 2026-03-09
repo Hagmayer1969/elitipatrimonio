@@ -10,7 +10,7 @@ create extension if not exists "uuid-ossp";
 create table if not exists unidades (
   id text primary key,
   nome text not null,
-  end text,
+  endereco text,
   cidade text,
   cor text default '#F97316',
   ativa boolean default true,

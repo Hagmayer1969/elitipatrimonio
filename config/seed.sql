@@ -4,7 +4,7 @@
 -- =============================================
 
 -- ---- Unidades ----
-insert into unidades (id, nome, "end", cidade, cor, ativa) values
+insert into unidades (id, nome, endereco, cidade, cor, ativa) values
   ('u1', 'ELITI LAB — Cachoeira do Bom Jesus',  'Rua Leonel Pereira, 1728',  'Florianópolis - SC', '#F97316', true),
   ('u2', 'ELITI PRO — Centro',                   'Rua Felipe Schmidt, 515',   'Florianópolis - SC', '#3B82F6', true),
   ('u3', 'ELITI DAY — Palhoça',                  'Av. Caminho Novo, 890',     'Palhoça - SC',       '#10B981', true),

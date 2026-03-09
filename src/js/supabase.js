@@ -89,7 +89,7 @@ function mapUn(r) {
   return {
     id:     r.id,
     nome:   r.nome || "",
-    end:    r.end || "",
+    end:    r.endereco || "",
     cidade: r.cidade || "",
     cor:    r.cor || "#F97316",
     ativa:  r.ativa !== false,
@@ -131,12 +131,12 @@ function eqToDb(e) {
 
 function unToDb(u) {
   return {
-    id:     u.id,
-    nome:   u.nome,
-    end:    u.end,
-    cidade: u.cidade,
-    cor:    u.cor,
-    ativa:  u.ativa,
+    id:       u.id,
+    nome:     u.nome,
+    endereco: u.end,
+    cidade:   u.cidade,
+    cor:      u.cor,
+    ativa:    u.ativa,
   };
 }
 
