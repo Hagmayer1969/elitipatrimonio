@@ -3,6 +3,11 @@
 // =============================================
 
 function renderReconciliacao() {
+  // Verifica se a migração SQL já foi executada
+  // (se algum usuário já tem epanelId preenchido, a coluna existe)
+  const migracaoFeita = usuarios.some((u) => u.epanelId);
+  const alertEl = document.getElementById("sqlMigrationAlert");
+  if (alertEl) alertEl.style.display = migracaoFeita ? "none" : "flex";
   // ---- Painel de status ----
   const total = equipamentos.length;
   const comEpanel = equipamentos.filter((e) => e.epanelId).length;
@@ -140,12 +145,11 @@ async function importarPossesEpanel(input) {
 
   // Encontra a seção POSSES no CSV multi-seção
   const linhas = text.split("\n").map((l) => l.trim());
-  const idxPosses = linhas.findIndex((l) =>
-    l.toUpperCase().includes("POSSES"),
-  );
+  const idxPosses = linhas.findIndex((l) => l.toUpperCase().includes("POSSES"));
   if (idxPosses < 0) {
     logEl.style.color = "#EF4444";
-    logEl.textContent = "❌ Seção POSSES não encontrada no arquivo. Verifique se é o CSV correto do ePainel.";
+    logEl.textContent =
+      "❌ Seção POSSES não encontrada no arquivo. Verifique se é o CSV correto do ePainel.";
     return;
   }
 
@@ -154,7 +158,10 @@ async function importarPossesEpanel(input) {
   let i = idxPosses + 2; // pula o cabeçalho "id,nome"
   while (i < linhas.length) {
     const l = linhas[i];
-    if (!l) { i++; continue; }
+    if (!l) {
+      i++;
+      continue;
+    }
     // Nova seção começa com texto sem vírgula ou com cabeçalho de outra seção
     if (!/^\d+,/.test(l)) break;
     linhasPosses.push(l);
@@ -193,7 +200,9 @@ async function importarPossesEpanel(input) {
     return true;
   });
 
-  let criados = 0, jaExistiam = 0, erros = 0;
+  let criados = 0,
+    jaExistiam = 0,
+    erros = 0;
   const naoEncontrados = [];
 
   for (const p of possesSemDup) {
