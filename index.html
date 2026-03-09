@@ -586,6 +586,31 @@
 
     <!-- ========== MODAIS ========== -->
 
+    <!-- Modal Câmera — fora de qualquer modal/overflow para position:fixed funcionar -->
+    <div id="cameraModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:9990;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;color:var(--t1);font-weight:700">📷 Tirar Foto</div>
+      <div style="position:relative;border-radius:14px;overflow:hidden;max-width:min(480px,90vw);width:100%">
+        <video id="cameraStream" autoplay playsinline muted
+          style="width:100%;display:block;background:#000;aspect-ratio:4/3;object-fit:cover;border-radius:12px">
+        </video>
+        <button id="btnFlipCamera" onclick="trocarCamera()"
+          style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center">
+          🔄
+        </button>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <button onclick="fecharCamera()" class="btn btn-ghost">✕ Cancelar</button>
+        <button onclick="capturarFoto()"
+          style="width:68px;height:68px;border-radius:50%;background:var(--orange);border:4px solid rgba(255,255,255,0.3);cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(249,115,22,0.35);flex-shrink:0">
+          📸
+        </button>
+        <button onclick="document.getElementById('fotoInput').click();fecharCamera();" class="btn btn-ghost">
+          🖼 Galeria
+        </button>
+      </div>
+      <canvas id="cameraCanvas" style="display:none"></canvas>
+    </div>
+
     <!-- Modal Equipamento -->
     <div id="modal-equipamento" class="modal-bg" style="display: none">
       <div class="modal">
@@ -636,30 +661,6 @@
           <!-- Input galeria -->
           <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="previewFotoArquivo(event)">
 
-          <!-- Modal câmera (aparece dentro do modal principal) -->
-          <div id="cameraModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:20px">
-            <div style="font-family:'Syne',sans-serif;font-size:16px;color:var(--t1);font-weight:700">📷 Tirar Foto</div>
-            <div style="position:relative;border-radius:14px;overflow:hidden;max-width:min(480px,90vw);width:100%">
-              <video id="cameraStream" autoplay playsinline muted
-                style="width:100%;display:block;background:#000;aspect-ratio:4/3;object-fit:cover">
-              </video>
-              <button id="btnFlipCamera" onclick="trocarCamera()"
-                style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;display:none">
-                🔄
-              </button>
-            </div>
-            <div style="display:flex;gap:16px;align-items:center">
-              <button onclick="fecharCamera()" class="btn btn-ghost">✕ Cancelar</button>
-              <button onclick="capturarFoto()"
-                style="width:64px;height:64px;border-radius:50%;background:var(--orange);border:4px solid rgba(255,255,255,0.3);cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px rgba(249,115,22,0.35)">
-                📸
-              </button>
-              <button onclick="document.getElementById('fotoInput').click();fecharCamera();" class="btn btn-ghost" title="Usar galeria">
-                🖼 Galeria
-              </button>
-            </div>
-            <canvas id="cameraCanvas" style="display:none"></canvas>
-          </div>
           <div class="grid-2">
             <div class="col-full">
               <div class="label">Nome / Descrição *</div>
