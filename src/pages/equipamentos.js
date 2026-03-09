@@ -3,7 +3,7 @@
 // =============================================
 
 let currentPhotoData = "";
-let _cameraStream = null;       // MediaStream ativo
+let _cameraStream = null; // MediaStream ativo
 let _cameraFacingMode = "environment"; // "environment" = traseira, "user" = frontal
 let _hasMultipleCameras = false;
 
@@ -26,10 +26,14 @@ async function abrirCamera() {
   // Verifica se há mais de uma câmera (para mostrar botão de flip)
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter(d => d.kind === "videoinput");
+    const cameras = devices.filter((d) => d.kind === "videoinput");
     _hasMultipleCameras = cameras.length > 1;
-    document.getElementById("btnFlipCamera").style.display = _hasMultipleCameras ? "flex" : "none";
-  } catch (_) { _hasMultipleCameras = false; }
+    document.getElementById("btnFlipCamera").style.display = _hasMultipleCameras
+      ? "flex"
+      : "none";
+  } catch (_) {
+    _hasMultipleCameras = false;
+  }
 
   await _iniciarStream();
 }
@@ -38,21 +42,28 @@ async function abrirCamera() {
 async function _iniciarStream() {
   // Para stream anterior se existir
   if (_cameraStream) {
-    _cameraStream.getTracks().forEach(t => t.stop());
+    _cameraStream.getTracks().forEach((t) => t.stop());
     _cameraStream = null;
   }
 
   try {
     _cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: _cameraFacingMode, width: { ideal: 1280 }, height: { ideal: 960 } },
-      audio: false
+      video: {
+        facingMode: _cameraFacingMode,
+        width: { ideal: 1280 },
+        height: { ideal: 960 },
+      },
+      audio: false,
     });
     const video = document.getElementById("cameraStream");
     video.srcObject = _cameraStream;
   } catch (err) {
     // Tentar qualquer câmera disponível como fallback
     try {
-      _cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      _cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
       document.getElementById("cameraStream").srcObject = _cameraStream;
     } catch (err2) {
       fecharCamera();
@@ -64,7 +75,8 @@ async function _iniciarStream() {
 
 /** Alterna entre câmera traseira e frontal */
 async function trocarCamera() {
-  _cameraFacingMode = _cameraFacingMode === "environment" ? "user" : "environment";
+  _cameraFacingMode =
+    _cameraFacingMode === "environment" ? "user" : "environment";
   await _iniciarStream();
 }
 
@@ -95,7 +107,7 @@ function capturarFoto() {
 /** Fecha a câmera e libera os recursos */
 function fecharCamera() {
   if (_cameraStream) {
-    _cameraStream.getTracks().forEach(t => t.stop());
+    _cameraStream.getTracks().forEach((t) => t.stop());
     _cameraStream = null;
   }
   const video = document.getElementById("cameraStream");
@@ -121,7 +133,10 @@ function _aplicarFoto(dataUrl) {
   const img = document.getElementById("photoPreviewImg");
   const empty = document.getElementById("photoZoneEmpty");
   const removeBtn = document.getElementById("photoRemoveBtn");
-  if (img) { img.src = dataUrl; img.style.display = "block"; }
+  if (img) {
+    img.src = dataUrl;
+    img.style.display = "block";
+  }
   if (empty) empty.style.display = "none";
   if (removeBtn) removeBtn.style.display = "flex";
 }
@@ -132,7 +147,10 @@ function removerFotoEq() {
   const img = document.getElementById("photoPreviewImg");
   const empty = document.getElementById("photoZoneEmpty");
   const removeBtn = document.getElementById("photoRemoveBtn");
-  if (img) { img.src = ""; img.style.display = "none"; }
+  if (img) {
+    img.src = "";
+    img.style.display = "none";
+  }
   if (empty) empty.style.display = "flex";
   if (removeBtn) removeBtn.style.display = "none";
 }

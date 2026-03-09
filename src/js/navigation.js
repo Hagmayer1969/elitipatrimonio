@@ -20,14 +20,20 @@ function showPage(id, el) {
   if (id === "equipamentos") renderEquipamentos();
   if (id === "usuarios") {
     if (usuarios.length === 0) {
-      carregarDados().then(() => { populateSelects(); renderUsuarios(); });
+      carregarDados().then(() => {
+        populateSelects();
+        renderUsuarios();
+      });
     } else {
       renderUsuarios();
     }
   }
   if (id === "unidades") {
     if (unidades.length === 0) {
-      carregarDados().then(() => { populateSelects(); renderUnidades(); });
+      carregarDados().then(() => {
+        populateSelects();
+        renderUnidades();
+      });
     } else {
       renderUnidades();
     }

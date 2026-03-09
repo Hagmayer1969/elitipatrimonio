@@ -13,8 +13,8 @@ function closeModal(id) {
   document.body.style.overflow = "";
 
   if (id === "equipamento") {
-    fecharCamera();        // para stream de câmera se estiver aberto
-    removerFotoEq();       // reseta UI de foto
+    fecharCamera(); // para stream de câmera se estiver aberto
+    removerFotoEq(); // reseta UI de foto
     currentPhotoData = "";
     document.querySelector("#modal-equipamento .modal-head div").textContent =
       "Novo Equipamento";
