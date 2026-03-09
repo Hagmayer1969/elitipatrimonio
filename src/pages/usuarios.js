@@ -2,111 +2,6 @@
 //  ELITI PATRIMÔNIO — Alunos (Usuários)
 // =============================================
 
-function renderUsuarios() {
-  const busca =
-    document.getElementById("userSearch")?.value.toLowerCase() || "";
-  const unitFilter = document.getElementById("userUnitFilter")?.value || "";
-
-  // Popular select de unidade (lazy, só na 1ª chamada)
-  const unitSel = document.getElementById("userUnitFilter");
-  if (unitSel && unitSel.options.length <= 1) {
-    unitSel.innerHTML =
-      '<option value="">Todas as unidades</option>' +
-      unidades
-        .map(
-          (u) => `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`,
-        )
-        .join("");
-  }
-
-  const list = usuarios.filter((u) => {
-    const matchBusca =
-      !busca ||
-      u.nome.toLowerCase().includes(busca) ||
-      u.turma.toLowerCase().includes(busca);
-    const matchUnit = !unitFilter || u.unidade === unitFilter;
-    return matchBusca && matchUnit;
-  });
-
-  document.getElementById("userGrid").innerHTML =
-    list
-      .map((u, i) => {
-        const eqs = getEquipsByUser(u.id);
-        const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-        const uni = unidades.find((x) => x.id === u.unidade);
-        const uniNome = uni ? uni.nome.split(" — ")[0] : u.unidade;
-
-        // Lista de equipamentos com botão ✕ individual
-        const kitHtml =
-          eqs.length > 0
-            ? `<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
-          ${eqs
-            .map(
-              (e) => `
-            <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)">
-              <span style="font-size:16px;flex-shrink:0">${TIPO_ICON[e.tipo] || "📦"}</span>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.nome}</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
-                  ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="color:#EF4444;opacity:0.7">🏷 Sem patrimônio</span>'}
-                  ${e.serie ? ` · 🔢 ${e.serie}` : ""}
-                  ${e.marca || e.modelo ? `<br>${e.marca || ""} ${e.modelo || ""}`.trim() : ""}
-                </div>
-              </div>
-              <button onclick="removerEqDoAluno('${e.id}','${u.id}')"
-                title="Remover deste aluno"
-                style="background:none;border:none;cursor:pointer;color:#EF4444;font-size:15px;padding:2px 5px;opacity:0.65;flex-shrink:0;line-height:1"
-                onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.65">✕</button>
-            </div>`,
-            )
-            .join("")}
-        </div>`
-            : `<div style="font-size:12px;color:var(--t3);font-style:italic;margin-bottom:10px;padding:10px;text-align:center;border:1px dashed rgba(255,255,255,0.1);border-radius:8px">
-           Nenhum equipamento atribuído
-         </div>`;
-
-        return `
-    <div class="card" style="padding:18px;display:flex;flex-direction:column">
-      <!-- Cabeçalho -->
-      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
-        <div class="user-avatar" style="background:linear-gradient(135deg,${color},${color}99);flex-shrink:0">${u.nome[0]}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.nome}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email}</div>
-        </div>
-      </div>
-      <!-- Badges -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
-        ${u.turma ? `<span class="badge" style="color:var(--orange);background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2)">${u.turma}</span>` : ""}
-        <span class="badge" style="color:var(--t3);background:rgba(255,255,255,0.04)">📍 ${uniNome}</span>
-        <span class="badge" style="color:${u.ativo ? "var(--green)" : "#555"};background:${u.ativo ? "rgba(16,185,129,0.1)" : "rgba(255,255,255,0.04)"}">${u.ativo ? "Ativo" : "Inativo"}</span>
-      </div>
-      <!-- Título kit + botão rápido -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3)">
-          Equipamentos (${eqs.length})
-        </div>
-        <button onclick="adicionarEqAoAluno('${u.id}')"
-          style="font-size:10px;color:var(--orange);background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:6px;padding:3px 9px;cursor:pointer;font-weight:600"
-          onmouseover="this.style.background='rgba(249,115,22,0.18)'"
-          onmouseout="this.style.background='rgba(249,115,22,0.08)'">+ Adicionar</button>
-      </div>
-      <!-- Lista editável -->
-      ${kitHtml}
-      <!-- Botão gerenciar completo -->
-      <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px;margin-top:auto"
-        onclick="openKitModal('${u.id}')">
-        📦 Gerenciar Kit Completo
-      </button>
-    </div>`;
-      })
-      .join("") ||
-    `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
-    <div style="font-size:40px;margin-bottom:14px;opacity:0.3">👤</div>
-    <div style="font-family:'Syne',sans-serif;font-size:17px">Nenhum aluno encontrado</div>
-  </div>`;
-}
-
 // ---- Remover equipamento de um aluno direto do card ----
 async function removerEqDoAluno(eqId, uid) {
   const eq = equipamentos.find((x) => x.id === eqId);
@@ -425,7 +320,13 @@ function renderUsuarios() {
         </div>
       </div>`;
     })
-    .join("");
+    .join("") ||
+    `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--t3)">
+    <div style="font-size:40px;margin-bottom:14px;opacity:0.3">👤</div>
+    <div style="font-family:'Syne',sans-serif;font-size:17px">Nenhum aluno encontrado</div>
+  </div>`;
+}
+
 // ---- Excluir aluno ----
 async function deleteAluno(uid) {
   const u = getUsuario(uid);
@@ -545,109 +446,3 @@ async function salvarEdicaoAluno(uid) {
   showToast(`✓ ${nome} atualizado!`);
 }
 
-// ---- Modal Kit ----
-function openKitModal(uid) {
-  const u = getUsuario(uid);
-  const todos = equipamentos.filter((e) => !e.usuario || e.usuario === uid);
-
-  const html = `
-    <div class="modal-bg" id="kitModal" onclick="this===event.target&&this.remove()">
-      <div class="modal">
-        <div class="modal-head">
-          <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700">Kit de ${u.nome}</div>
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('kitModal').remove()" style="padding:6px">✕</button>
-        </div>
-        <div class="modal-body">
-          <p style="font-size:13px;color:var(--t2);margin-bottom:18px">Selecione os equipamentos sob responsabilidade deste aluno.</p>
-          <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto">
-            ${todos
-              .map((e) => {
-                const sel = e.usuario === uid;
-                return `
-                <div onclick="toggleKit(this,'${e.id}','${uid}')"
-                  style="display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:10px;border:1px solid ${sel ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.07)"};background:${sel ? "rgba(249,115,22,0.08)" : "rgba(255,255,255,0.02)"};cursor:pointer;transition:all 0.15s"
-                  data-eqid="${e.id}" data-sel="${sel}">
-                  <span style="font-size:20px">${TIPO_ICON[e.tipo] || "📦"}</span>
-                  <div style="flex:1">
-                    <div style="font-size:13px;font-weight:500">${e.nome}</div>
-                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
-                      ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="opacity:0.5">🏷 Sem patrimônio</span>'}
-                      ${e.serie ? ` · 🔢 ${e.serie}` : ""}
-                      ${e.marca || e.modelo ? `<br>${(e.marca + " " + (e.modelo || "")).trim()}` : ""}
-                    </div>
-                  </div>
-                  <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${sel ? "var(--orange)" : "rgba(255,255,255,0.2)"};background:${sel ? "var(--orange)" : "transparent"};display:flex;align-items:center;justify-content:center;font-size:11px">${sel ? "✓" : ""}</div>
-                </div>`;
-              })
-              .join("")}
-          </div>
-        </div>
-        <div class="modal-foot">
-          <button class="btn btn-ghost" onclick="document.getElementById('kitModal').remove()">Cancelar</button>
-          <button class="btn btn-primary" onclick="salvarKit('${uid}')">📦 Salvar Kit</button>
-        </div>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML("beforeend", html);
-}
-
-function toggleKit(el, eqId) {
-  const isSel = el.dataset.sel === "true";
-  el.dataset.sel = !isSel;
-  const check = el.querySelector("div:last-child");
-  if (!isSel) {
-    el.style.border = "1px solid rgba(249,115,22,0.4)";
-    el.style.background = "rgba(249,115,22,0.08)";
-    check.style.borderColor = "var(--orange)";
-    check.style.background = "var(--orange)";
-    check.textContent = "✓";
-  } else {
-    el.style.border = "1px solid rgba(255,255,255,0.07)";
-    el.style.background = "rgba(255,255,255,0.02)";
-    check.style.borderColor = "rgba(255,255,255,0.2)";
-    check.style.background = "transparent";
-    check.textContent = "";
-  }
-}
-
-function salvarKit(uid) {
-  const modal = document.getElementById("kitModal");
-  // Limpa alocações atuais do usuário
-  equipamentos.forEach((e) => {
-    if (e.usuario === uid) e.usuario = "";
-  });
-  // Aplica selecionados
-  modal.querySelectorAll('[data-sel="true"]').forEach((el) => {
-    const eqId = el.dataset.eqid;
-    const eq = equipamentos.find((x) => x.id === eqId);
-    if (eq) eq.usuario = uid;
-  });
-  modal.remove();
-  renderUsuarios();
-  showToast("✓ Kit salvo!");
-}
-
-// ---- Salvar Aluno ----
-function salvarUsuario() {
-  const nome = document.getElementById("uNome").value.trim();
-  const email = document.getElementById("uEmail").value.trim();
-  if (!nome || !email) {
-    alert("Nome e e-mail são obrigatórios.");
-    return;
-  }
-
-  usuarios.push({
-    id: "usr_" + Date.now(),
-    nome,
-    email,
-    tel: document.getElementById("uTel").value,
-    unidade: document.getElementById("uUnidade").value,
-    turma: document.getElementById("uTurma").value,
-    ativo: true,
-  });
-
-  closeModal("usuario");
-  renderUsuarios();
-  if (typeof populateSelects === "function") populateSelects();
-  showToast("✓ Aluno cadastrado!");
-}
