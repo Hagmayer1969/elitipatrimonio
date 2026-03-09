@@ -608,28 +608,58 @@
           </button>
         </div>
         <div class="modal-body">
-          <div
-            class="photo-zone"
-            onclick="document.getElementById('fotoInput').click()"
-            id="photoZone"
-          >
-            <div style="text-align: center; color: var(--t3)">
-              <div style="font-size: 28px; margin-bottom: 8px; opacity: 0.5">
-                📷
+          <!-- Zona de foto do equipamento -->
+          <div class="photo-zone-wrapper" id="photoZoneWrapper">
+            <div class="photo-zone" id="photoZone">
+              <div class="photo-zone-empty" id="photoZoneEmpty">
+                <div style="font-size:36px;margin-bottom:8px;opacity:0.4">📷</div>
+                <div style="font-size:13px;color:var(--t3)">Adicionar foto do equipamento</div>
+                <div style="font-size:11px;color:var(--t3);opacity:0.7;margin-top:4px">Clique em uma opção abaixo</div>
               </div>
-              <div style="font-size: 13px">Clique para adicionar foto</div>
-              <div style="font-size: 11px; margin-top: 2px">
-                JPG, PNG ou WebP
-              </div>
+              <img id="photoPreviewImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+              <!-- Botão remover (só aparece com foto) -->
+              <button class="photo-remove-btn" id="photoRemoveBtn" onclick="removerFotoEq()" style="display:none" title="Remover foto">✕</button>
+            </div>
+            <!-- Botões de ação abaixo da zona -->
+            <div class="photo-actions" id="photoActions">
+              <button class="photo-action-btn" id="btnCamera" onclick="abrirCamera()" title="Tirar foto com câmera">
+                <span style="font-size:18px">📷</span>
+                <span>Câmera</span>
+              </button>
+              <button class="photo-action-btn" onclick="document.getElementById('fotoInput').click()" title="Escolher da galeria">
+                <span style="font-size:18px">🖼</span>
+                <span>Galeria</span>
+              </button>
             </div>
           </div>
-          <input
-            type="file"
-            id="fotoInput"
-            accept="image/*"
-            style="display: none"
-            onchange="previewFoto(event)"
-          />
+
+          <!-- Input galeria -->
+          <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="previewFotoArquivo(event)">
+
+          <!-- Modal câmera (aparece dentro do modal principal) -->
+          <div id="cameraModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+            <div style="font-family:'Syne',sans-serif;font-size:16px;color:var(--t1);font-weight:700">📷 Tirar Foto</div>
+            <div style="position:relative;border-radius:14px;overflow:hidden;max-width:min(480px,90vw);width:100%">
+              <video id="cameraStream" autoplay playsinline muted
+                style="width:100%;display:block;background:#000;aspect-ratio:4/3;object-fit:cover">
+              </video>
+              <button id="btnFlipCamera" onclick="trocarCamera()"
+                style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;display:none">
+                🔄
+              </button>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center">
+              <button onclick="fecharCamera()" class="btn btn-ghost">✕ Cancelar</button>
+              <button onclick="capturarFoto()"
+                style="width:64px;height:64px;border-radius:50%;background:var(--orange);border:4px solid rgba(255,255,255,0.3);cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px rgba(249,115,22,0.35)">
+                📸
+              </button>
+              <button onclick="document.getElementById('fotoInput').click();fecharCamera();" class="btn btn-ghost" title="Usar galeria">
+                🖼 Galeria
+              </button>
+            </div>
+            <canvas id="cameraCanvas" style="display:none"></canvas>
+          </div>
           <div class="grid-2">
             <div class="col-full">
               <div class="label">Nome / Descrição *</div>

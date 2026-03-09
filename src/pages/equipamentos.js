@@ -1,8 +1,141 @@
 // =============================================
-//  ELITI PATRIMÔNIO — Equipamentos
+//  ELITI PATRÔNIO — Equipamentos
 // =============================================
 
 let currentPhotoData = "";
+let _cameraStream = null;       // MediaStream ativo
+let _cameraFacingMode = "environment"; // "environment" = traseira, "user" = frontal
+let _hasMultipleCameras = false;
+
+// =============================================
+//  Foto — Câmera e Galeria
+// =============================================
+
+/** Detecta se há câmeras disponíveis e tenta abrir a câmera traseira (mobile) */
+async function abrirCamera() {
+  // Se não há suporte à API, fallback para galeria
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast("⚠ Câmera não disponível neste dispositivo. Use a galeria.");
+    document.getElementById("fotoInput").click();
+    return;
+  }
+
+  const modal = document.getElementById("cameraModal");
+  modal.style.display = "flex";
+
+  // Verifica se há mais de uma câmera (para mostrar botão de flip)
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter(d => d.kind === "videoinput");
+    _hasMultipleCameras = cameras.length > 1;
+    document.getElementById("btnFlipCamera").style.display = _hasMultipleCameras ? "flex" : "none";
+  } catch (_) { _hasMultipleCameras = false; }
+
+  await _iniciarStream();
+}
+
+/** Inicia o stream de vídeo com a câmera desejada */
+async function _iniciarStream() {
+  // Para stream anterior se existir
+  if (_cameraStream) {
+    _cameraStream.getTracks().forEach(t => t.stop());
+    _cameraStream = null;
+  }
+
+  try {
+    _cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: _cameraFacingMode, width: { ideal: 1280 }, height: { ideal: 960 } },
+      audio: false
+    });
+    const video = document.getElementById("cameraStream");
+    video.srcObject = _cameraStream;
+  } catch (err) {
+    // Tentar qualquer câmera disponível como fallback
+    try {
+      _cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      document.getElementById("cameraStream").srcObject = _cameraStream;
+    } catch (err2) {
+      fecharCamera();
+      showToast("⚠ Permissão de câmera negada. Use a galeria de imagens.");
+      document.getElementById("fotoInput").click();
+    }
+  }
+}
+
+/** Alterna entre câmera traseira e frontal */
+async function trocarCamera() {
+  _cameraFacingMode = _cameraFacingMode === "environment" ? "user" : "environment";
+  await _iniciarStream();
+}
+
+/** Captura o frame atual do vídeo e salva como foto */
+function capturarFoto() {
+  const video = document.getElementById("cameraStream");
+  const canvas = document.getElementById("cameraCanvas");
+  if (!video || !canvas) return;
+
+  canvas.width = video.videoWidth || 1280;
+  canvas.height = video.videoHeight || 960;
+  const ctx = canvas.getContext("2d");
+
+  // Espelha horizontalmente se for câmera frontal ("selfie")
+  if (_cameraFacingMode === "user") {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0);
+
+  // Converte para base64 JPEG (qualidade 85%)
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+  _aplicarFoto(dataUrl);
+  fecharCamera();
+  showToast("✓ Foto capturada!");
+}
+
+/** Fecha a câmera e libera os recursos */
+function fecharCamera() {
+  if (_cameraStream) {
+    _cameraStream.getTracks().forEach(t => t.stop());
+    _cameraStream = null;
+  }
+  const video = document.getElementById("cameraStream");
+  if (video) video.srcObject = null;
+  const modal = document.getElementById("cameraModal");
+  if (modal) modal.style.display = "none";
+}
+
+/** Processa arquivo selecionado pela galeria */
+function previewFotoArquivo(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => _aplicarFoto(ev.target.result);
+  reader.readAsDataURL(file);
+  // Reseta input para permitir selecionar o mesmo arquivo novamente
+  evt.target.value = "";
+}
+
+/** Aplica a foto (base64) na UI e salva em currentPhotoData */
+function _aplicarFoto(dataUrl) {
+  currentPhotoData = dataUrl;
+  const img = document.getElementById("photoPreviewImg");
+  const empty = document.getElementById("photoZoneEmpty");
+  const removeBtn = document.getElementById("photoRemoveBtn");
+  if (img) { img.src = dataUrl; img.style.display = "block"; }
+  if (empty) empty.style.display = "none";
+  if (removeBtn) removeBtn.style.display = "flex";
+}
+
+/** Remove a foto atual e volta ao estado vazio */
+function removerFotoEq() {
+  currentPhotoData = "";
+  const img = document.getElementById("photoPreviewImg");
+  const empty = document.getElementById("photoZoneEmpty");
+  const removeBtn = document.getElementById("photoRemoveBtn");
+  if (img) { img.src = ""; img.style.display = "none"; }
+  if (empty) empty.style.display = "flex";
+  if (removeBtn) removeBtn.style.display = "none";
+}
 
 // ---- Render ----
 function renderEquipamentos() {
@@ -26,18 +159,23 @@ function renderEquipamentos() {
   document.getElementById("equipGrid").innerHTML =
     list
       .map((e) => {
-        const u  = getUsuario(e.usuario);
+        const u = getUsuario(e.usuario);
         const un = getUnidade(e.unidade);
         const st = STATUS[e.status];
 
         // Dados técnicos — só mostra o que está preenchido
-        const temPatrimonio = e.patrimonio && e.patrimonio !== "PAT-001" && e.patrimonio !== "";
-        const temSerie      = e.serie && e.serie.trim() !== "";
-        const temMarca      = (e.marca || "") + " " + (e.modelo || "");
+        const temPatrimonio =
+          e.patrimonio && e.patrimonio !== "PAT-001" && e.patrimonio !== "";
+        const temSerie = e.serie && e.serie.trim() !== "";
+        const temMarca = (e.marca || "") + " " + (e.modelo || "");
 
         const dadosTecnicos = [
-          temPatrimonio ? `<span title="Patrimônio" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🏷</span>${e.patrimonio}</span>` : `<span style="color:#EF4444;opacity:0.8" title="Sem etiqueta">🏷 Sem patrimônio</span>`,
-          temSerie      ? `<span title="Número de Série" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🔢</span>${e.serie}</span>` : `<span style="color:var(--t3)" title="Sem série">🔢 —</span>`,
+          temPatrimonio
+            ? `<span title="Patrimônio" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🏷</span>${e.patrimonio}</span>`
+            : `<span style="color:#EF4444;opacity:0.8" title="Sem etiqueta">🏷 Sem patrimônio</span>`,
+          temSerie
+            ? `<span title="Número de Série" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🔢</span>${e.serie}</span>`
+            : `<span style="color:var(--t3)" title="Sem série">🔢 —</span>`,
         ].join("  ");
 
         return `
@@ -75,13 +213,14 @@ function renderEquipamentos() {
             style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);cursor:pointer;transition:background 0.15s"
             onmouseover="this.style.background='rgba(249,115,22,0.07)'"
             onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-            ${u
-              ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
+            ${
+              u
+                ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
                  <div style="flex:1;min-width:0">
                    <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.nome}</div>
                    <div style="font-size:10px;color:var(--t3)">👤 Responsável · clique p/ trocar</div>
                  </div>`
-              : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">➕</div>
+                : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">➕</div>
                  <div style="font-size:12px;color:var(--t3)">Sem responsável — clique p/ atribuir</div>`
             }
             <span style="font-size:14px;opacity:0.4">✎</span>
@@ -118,10 +257,20 @@ async function devolverEquipamento(id) {
   )
     return;
 
-  const ok = await dbAtualizarCampoEq(id, { usuario: "", status: "disponivel" });
+  const ok = await dbAtualizarCampoEq(id, {
+    usuario: "",
+    status: "disponivel",
+  });
   if (!ok) return;
 
-  const mov = { id: "mov_" + Date.now(), eqId: id, uid: u?.id || "", tipo: "devolucao", data: new Date().toISOString(), resp: "Sistema" };
+  const mov = {
+    id: "mov_" + Date.now(),
+    eqId: id,
+    uid: u?.id || "",
+    tipo: "devolucao",
+    data: new Date().toISOString(),
+    resp: "Sistema",
+  };
   await dbRegistrarMovimentacao(mov);
 
   renderEquipamentos();
@@ -206,16 +355,21 @@ async function salvarDadosTecnicos(eqId) {
   if (!e) return;
 
   const patrimonio = document.getElementById("dtPatrimonio").value.trim();
-  const serie      = document.getElementById("dtSerie").value.trim();
-  const marca      = document.getElementById("dtMarca").value.trim();
-  const modelo     = document.getElementById("dtModelo").value.trim();
+  const serie = document.getElementById("dtSerie").value.trim();
+  const marca = document.getElementById("dtMarca").value.trim();
+  const modelo = document.getElementById("dtModelo").value.trim();
 
   if (!patrimonio && !serie && !marca && !modelo) {
     showToast("⚠ Preencha ao menos um campo antes de salvar.");
     return;
   }
 
-  const campos = { patrimonio: patrimonio || e.patrimonio, serie, marca, modelo };
+  const campos = {
+    patrimonio: patrimonio || e.patrimonio,
+    serie,
+    marca,
+    modelo,
+  };
   const ok = await dbAtualizarCampoEq(eqId, campos);
   if (!ok) return;
 
@@ -328,9 +482,12 @@ async function confirmarTrocaResponsavel(eqId, novoUid) {
   if (!ok) return;
 
   const mov = {
-    id: "mov_" + Date.now(), eqId, uid: novoUid || anteriorUid,
+    id: "mov_" + Date.now(),
+    eqId,
+    uid: novoUid || anteriorUid,
     tipo: novoUid ? "emprestimo" : "devolucao",
-    data: new Date().toISOString(), resp: "Sistema",
+    data: new Date().toISOString(),
+    resp: "Sistema",
   };
   await dbRegistrarMovimentacao(mov);
 
@@ -364,8 +521,9 @@ function editEquipamento(id) {
   document.getElementById("eqObs").value = e.obs;
 
   if (e.foto) {
-    document.getElementById("photoZone").innerHTML = `<img src="${e.foto}">`;
-    currentPhotoData = e.foto;
+    _aplicarFoto(e.foto);
+  } else {
+    removerFotoEq();
   }
 
   document.querySelector("#modal-equipamento .modal-head div").textContent =
@@ -417,7 +575,9 @@ async function salvarEquipamento() {
     usuario: document.getElementById("eqUsuario").value || "",
     foto: currentPhotoData,
     obs: document.getElementById("eqObs").value,
-    data: document.getElementById("eqData").value || new Date().toISOString().split("T")[0],
+    data:
+      document.getElementById("eqData").value ||
+      new Date().toISOString().split("T")[0],
     valor: parseFloat(document.getElementById("eqValor").value) || 0,
     epanelId: "",
     sincronizado: false,
