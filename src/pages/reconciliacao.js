@@ -122,6 +122,132 @@ function sincronizarLote(btn) {
   }, 1800);
 }
 
+// =============================================
+//  Importar POSSES (responsáveis) do CSV ePainel
+//  Formato: seção "POSSES (responsáveis/destinatários)"
+//  id,nome — filtra apenas os que têm #numero (alunos reais)
+// =============================================
+async function importarPossesEpanel(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const logEl = document.getElementById("possesLog");
+  logEl.style.display = "block";
+  logEl.style.color = "var(--t3)";
+  logEl.textContent = "⏳ Lendo arquivo...";
+
+  const text = await file.text();
+  input.value = "";
+
+  // Encontra a seção POSSES no CSV multi-seção
+  const linhas = text.split("\n").map((l) => l.trim());
+  const idxPosses = linhas.findIndex((l) =>
+    l.toUpperCase().includes("POSSES"),
+  );
+  if (idxPosses < 0) {
+    logEl.style.color = "#EF4444";
+    logEl.textContent = "❌ Seção POSSES não encontrada no arquivo. Verifique se é o CSV correto do ePainel.";
+    return;
+  }
+
+  // Coleta linhas da seção POSSES até a próxima seção vazia ou fim
+  const linhasPosses = [];
+  let i = idxPosses + 2; // pula o cabeçalho "id,nome"
+  while (i < linhas.length) {
+    const l = linhas[i];
+    if (!l) { i++; continue; }
+    // Nova seção começa com texto sem vírgula ou com cabeçalho de outra seção
+    if (!/^\d+,/.test(l)) break;
+    linhasPosses.push(l);
+    i++;
+  }
+
+  if (linhasPosses.length === 0) {
+    logEl.style.color = "#EF4444";
+    logEl.textContent = "❌ Nenhuma posse encontrada na seção POSSES.";
+    return;
+  }
+
+  // Filtra apenas os que têm #numero — são os alunos individuais
+  // Ex: "Bruna #269" → nome="Bruna", epanelRef="#269"
+  // Ignora entidades como "Primavera", "Asas", "PassBank" etc.
+  const posses = linhasPosses
+    .map((l) => {
+      const [, ...partes] = l.split(",");
+      const nomeRaw = partes.join(",").trim().replace(/^"|"$/g, "");
+      const match = nomeRaw.match(/^(.+?)\s*#(\d+)\s*$/);
+      if (!match) return null;
+      return {
+        nomeRaw,
+        nome: match[1].trim(),
+        epanelNum: match[2],
+        epanelId: `EP#${match[2]}`,
+      };
+    })
+    .filter(Boolean);
+
+  // Remove duplicados por epanelNum
+  const vistos = new Set();
+  const possesSemDup = posses.filter((p) => {
+    if (vistos.has(p.epanelNum)) return false;
+    vistos.add(p.epanelNum);
+    return true;
+  });
+
+  let criados = 0, jaExistiam = 0, erros = 0;
+  const naoEncontrados = [];
+
+  for (const p of possesSemDup) {
+    // Verifica se já existe pelo epanelId ou por nome similar
+    const jaExiste = usuarios.find(
+      (u) =>
+        u.epanelId === p.epanelId ||
+        u.nome.toLowerCase().trim() === p.nome.toLowerCase().trim(),
+    );
+
+    if (jaExiste) {
+      // Atualiza o epanelId se ainda não tiver
+      if (!jaExiste.epanelId) {
+        jaExiste.epanelId = p.epanelId;
+        await dbSalvarUsuario(jaExiste);
+      }
+      jaExistiam++;
+      continue;
+    }
+
+    // Cria novo aluno
+    const novoAluno = {
+      id: "usr_ep_" + p.epanelNum,
+      nome: p.nome,
+      email: "",
+      tel: "",
+      turma: "",
+      unidade: "",
+      ativo: true,
+      obs: `Importado do ePainel — ref. #${p.epanelNum}`,
+      epanelId: p.epanelId,
+    };
+
+    const ok = await dbSalvarUsuario(novoAluno);
+    if (ok) {
+      usuarios.push(novoAluno);
+      criados++;
+    } else {
+      erros++;
+      naoEncontrados.push(p.nome);
+    }
+  }
+
+  // Resultado
+  let msg = `✅ ${criados} aluno(s) criado(s) · ${jaExistiam} já existiam`;
+  if (erros > 0) msg += ` · ⚠ ${erros} com erro: ${naoEncontrados.join(", ")}`;
+  logEl.style.color = erros > 0 ? "#F59E0B" : "var(--green)";
+  logEl.textContent = msg;
+
+  renderUsuarios();
+  renderDashboard();
+  showToast(`✅ ${criados} alunos importados do ePainel!`);
+}
+
 // ---- Importar CSV do ePainel ----
 function importarCSVEpanel(input) {
   const file = input.files[0];

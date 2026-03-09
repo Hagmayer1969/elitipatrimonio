@@ -444,61 +444,56 @@
               "
             ></div>
 
-            <!-- Importação CSV do ePainel -->
-            <div class="card" style="padding: 20px; margin-bottom: 18px">
-              <div
-                style="
-                  font-family: &quot;Syne&quot;, sans-serif;
-                  font-size: 11px;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.1em;
-                  color: var(--t3);
-                  margin-bottom: 12px;
-                "
-              >
-                📥 Importar Bens do ePainel (CSV)
-              </div>
-              <div
-                style="
-                  display: flex;
-                  gap: 12px;
-                  align-items: flex-start;
-                  flex-wrap: wrap;
-                "
-              >
-                <div style="flex: 1; min-width: 200px">
-                  <div class="label">Arquivo exportado do ePainel</div>
-                  <input
-                    type="file"
-                    id="epanelCsv"
-                    accept=".csv,.xlsx"
-                    class="input"
-                    style="padding: 8px; cursor: pointer"
-                    onchange="importarCSVEpanel(this)"
-                  />
+            <!-- ① Importar POSSES (responsáveis do ePainel) → Alunos -->
+            <div class="card" style="padding: 20px; margin-bottom: 18px; border-left: 3px solid var(--orange)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <span style="font-size:20px">👥</span>
+                <div>
+                  <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700">Passo 1 — Importar Responsáveis do ePainel</div>
+                  <div style="font-size:11px;color:var(--t3);margin-top:2px">Importa a seção POSSES do CSV e cria os alunos no sistema</div>
                 </div>
-                <div
-                  style="
-                    font-size: 11px;
-                    color: var(--t3);
-                    line-height: 1.7;
-                    padding-top: 20px;
-                  "
-                >
-                  No ePainel:
-                  <strong style="color: var(--t2)">Bens → Exportar → CSV</strong
-                  ><br />
-                  Colunas esperadas:
-                  <code style="color: var(--orange)"
-                    >patrimônio, nome, série, responsável</code
-                  >
+                <span style="margin-left:auto;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--orange);white-space:nowrap">FAZER AGORA</span>
+              </div>
+              <div style="font-size:11px;color:var(--t3);background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.8">
+                1. Abra o arquivo <code style="color:var(--orange)">epanel_bens.csv</code> que você já tem<br>
+                2. Selecione abaixo — o sistema lê a seção <strong style="color:var(--t2)">POSSES</strong> automaticamente<br>
+                3. Apenas entradas com <code style="color:var(--orange)">#numero</code> (alunos) serão importadas — entidades como "Asas", "PassBank" são ignoradas
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+                <div style="flex:1;min-width:200px">
+                  <div class="label">CSV do ePainel (epanel_bens.csv)</div>
+                  <input type="file" id="possesCsv" accept=".csv" class="input"
+                    style="padding:8px;cursor:pointer"
+                    onchange="importarPossesEpanel(this)">
                 </div>
               </div>
-              <div
-                id="importLog"
-                style="margin-top: 10px; font-size: 12px; display: none"
-              ></div>
+              <div id="possesLog" style="margin-top:10px;font-size:12px;display:none;line-height:1.7"></div>
+            </div>
+
+            <!-- ② Importar Bens (reconciliação futura) -->
+            <div class="card" style="padding: 20px; margin-bottom: 18px; border-left: 3px solid rgba(255,255,255,0.1)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <span style="font-size:20px">📥</span>
+                <div>
+                  <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700">Passo 2 — Reconciliar Bens (após recadastramento)</div>
+                  <div style="font-size:11px;color:var(--t3);margin-top:2px">Use após terminar de cadastrar todos os equipamentos no sistema</div>
+                </div>
+                <span style="margin-left:auto;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--t3);white-space:nowrap">FASE FUTURA</span>
+              </div>
+              <div style="font-size:11px;color:var(--t3);background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.8">
+                Quando terminar o recadastramento, exporte do ePainel:<br>
+                <strong style="color:var(--t2)">Bens → Exportar → CSV</strong> com colunas: <code style="color:var(--orange)">patrimônio, nome, série, responsável</code><br>
+                O sistema vai cruzar com os equipamentos já cadastrados e vincular automaticamente.
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+                <div style="flex:1;min-width:200px">
+                  <div class="label">CSV de Bens exportado do ePainel</div>
+                  <input type="file" id="epanelCsv" accept=".csv,.xlsx" class="input"
+                    style="padding:8px;cursor:pointer"
+                    onchange="importarCSVEpanel(this)">
+                </div>
+              </div>
+              <div id="importLog" style="margin-top:10px;font-size:12px;display:none"></div>
             </div>
 
             <div
