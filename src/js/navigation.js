@@ -18,8 +18,20 @@ function showPage(id, el) {
       ?.classList.add("active");
 
   if (id === "equipamentos") renderEquipamentos();
-  if (id === "usuarios") renderUsuarios();
-  if (id === "unidades") renderUnidades();
+  if (id === "usuarios") {
+    if (usuarios.length === 0) {
+      carregarDados().then(() => { populateSelects(); renderUsuarios(); });
+    } else {
+      renderUsuarios();
+    }
+  }
+  if (id === "unidades") {
+    if (unidades.length === 0) {
+      carregarDados().then(() => { populateSelects(); renderUnidades(); });
+    } else {
+      renderUnidades();
+    }
+  }
   if (id === "movimentacoes") {
     // Popular select de equipamentos na tela de movimentações
     const sel = document.getElementById("reconcEq");

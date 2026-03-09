@@ -1077,6 +1077,9 @@
         populateSelects();
         renderDashboard();
         renderEquipamentos();
+        // Pré-renderiza alunos e unidades para não ficarem vazios na 1ª visita
+        renderUsuarios();
+        renderUnidades();
       }
       init();
 
