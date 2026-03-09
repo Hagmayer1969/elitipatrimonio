@@ -83,7 +83,7 @@ function editUnidade(id) {
 }
 
 // ---- Remover Unidade ----
-function deleteUnidade(id) {
+async function deleteUnidade(id) {
   const u = unidades.find((x) => x.id === id);
   const totalEqs = getEquipsByUnit(id).length;
   if (totalEqs > 0) {
@@ -93,13 +93,14 @@ function deleteUnidade(id) {
     return;
   }
   if (!confirm(`Remover a unidade "${u.nome}"?`)) return;
-  unidades.splice(unidades.indexOf(u), 1);
+  const ok = await dbDeletarUnidade(id);
+  if (!ok) return;
   renderUnidades();
   showToast("✓ Unidade removida!");
 }
 
 // ---- Salvar / Atualizar Unidade ----
-function salvarUnidade() {
+async function salvarUnidade() {
   const nome = document.getElementById("unNome").value.trim();
   if (!nome) {
     alert("Nome é obrigatório.");
@@ -109,7 +110,8 @@ function salvarUnidade() {
   const btn = document.querySelector("#modal-unidade .modal-foot .btn-primary");
   const editId = btn.getAttribute("data-edit-id");
 
-  const dados = {
+  const un = {
+    id: editId || "uni_" + Date.now(),
     nome,
     end: document.getElementById("unEnd").value,
     cidade: document.getElementById("unCidade").value,
@@ -117,12 +119,15 @@ function salvarUnidade() {
     cor: document.getElementById("unCor").value,
   };
 
+  const ok = await dbSalvarUnidade(un);
+  if (!ok) return;
+
   if (editId) {
     const idx = unidades.findIndex((x) => x.id === editId);
-    if (idx >= 0) unidades[idx] = { ...unidades[idx], ...dados };
+    if (idx >= 0) unidades[idx] = un;
     showToast("✓ Unidade atualizada!");
   } else {
-    unidades.push({ id: "uni_" + Date.now(), ...dados });
+    unidades.push(un);
     showToast("✓ Unidade cadastrada!");
   }
 

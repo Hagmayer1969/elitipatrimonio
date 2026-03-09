@@ -109,7 +109,7 @@ function renderEquipamentos() {
 }
 
 // ---- Devolução rápida ----
-function devolverEquipamento(id) {
+async function devolverEquipamento(id) {
   const e = equipamentos.find((x) => x.id === id);
   if (!e) return;
   const u = getUsuario(e.usuario);
@@ -117,16 +117,13 @@ function devolverEquipamento(id) {
     !confirm(`Confirmar devolução de "${e.nome}"${u ? ` por ${u.nome}` : ""}?`)
   )
     return;
-  e.usuario = "";
-  e.status = "disponivel";
-  movimentacoes.unshift({
-    id: "mov_" + Date.now(),
-    eqId: id,
-    uid: u?.id || "",
-    tipo: "devolucao",
-    data: new Date().toISOString(),
-    resp: "Sistema",
-  });
+
+  const ok = await dbAtualizarCampoEq(id, { usuario: "", status: "disponivel" });
+  if (!ok) return;
+
+  const mov = { id: "mov_" + Date.now(), eqId: id, uid: u?.id || "", tipo: "devolucao", data: new Date().toISOString(), resp: "Sistema" };
+  await dbRegistrarMovimentacao(mov);
+
   renderEquipamentos();
   renderDashboard();
   showToast(`↩ ${e.nome} devolvido e disponível!`);
@@ -204,7 +201,7 @@ function fecharDadosTecModal() {
   document.getElementById("dadosTecModal")?.remove();
 }
 
-function salvarDadosTecnicos(eqId) {
+async function salvarDadosTecnicos(eqId) {
   const e = equipamentos.find((x) => x.id === eqId);
   if (!e) return;
 
@@ -218,10 +215,9 @@ function salvarDadosTecnicos(eqId) {
     return;
   }
 
-  e.patrimonio = patrimonio || e.patrimonio;
-  e.serie      = serie;
-  e.marca      = marca;
-  e.modelo     = modelo;
+  const campos = { patrimonio: patrimonio || e.patrimonio, serie, marca, modelo };
+  const ok = await dbAtualizarCampoEq(eqId, campos);
+  if (!ok) return;
 
   fecharDadosTecModal();
   renderEquipamentos();
@@ -320,21 +316,23 @@ function fecharTrocaModal() {
   document.getElementById("trocaModal")?.remove();
 }
 
-function confirmarTrocaResponsavel(eqId, novoUid) {
+async function confirmarTrocaResponsavel(eqId, novoUid) {
   const e = equipamentos.find((x) => x.id === eqId);
   if (!e) return;
   const anteriorUid = e.usuario;
-  e.usuario = novoUid;
-  e.status = novoUid ? "em_uso" : "disponivel";
 
-  movimentacoes.unshift({
-    id: "mov_" + Date.now(),
-    eqId,
-    uid: novoUid || anteriorUid,
-    tipo: novoUid ? "emprestimo" : "devolucao",
-    data: new Date().toISOString(),
-    resp: "Sistema",
+  const ok = await dbAtualizarCampoEq(eqId, {
+    usuario: novoUid,
+    status: novoUid ? "em_uso" : "disponivel",
   });
+  if (!ok) return;
+
+  const mov = {
+    id: "mov_" + Date.now(), eqId, uid: novoUid || anteriorUid,
+    tipo: novoUid ? "emprestimo" : "devolucao",
+    data: new Date().toISOString(), resp: "Sistema",
+  };
+  await dbRegistrarMovimentacao(mov);
 
   fecharTrocaModal();
   renderEquipamentos();
@@ -381,15 +379,17 @@ function editEquipamento(id) {
 }
 
 // ---- Remover ----
-function deleteEquipamento(id) {
+async function deleteEquipamento(id) {
   if (!confirm("Remover este equipamento?")) return;
-  equipamentos = equipamentos.filter((e) => e.id !== id);
+  const ok = await dbDeletarEquipamento(id);
+  if (!ok) return;
   renderEquipamentos();
   renderDashboard();
+  showToast("🗑 Equipamento removido.");
 }
 
 // ---- Salvar (novo ou edição) ----
-function salvarEquipamento() {
+async function salvarEquipamento() {
   const nome = document.getElementById("eqNome").value.trim();
   const marca = document.getElementById("eqMarca").value.trim();
   const patrimonio = document.getElementById("eqPatrimonio").value.trim();
@@ -404,7 +404,8 @@ function salvarEquipamento() {
   );
   const editId = btn.getAttribute("data-edit-id");
 
-  const data = {
+  const eq = {
+    id: editId || "eq_" + Date.now(),
     nome,
     tipo: document.getElementById("eqTipo").value,
     marca,
@@ -416,19 +417,20 @@ function salvarEquipamento() {
     usuario: document.getElementById("eqUsuario").value || "",
     foto: currentPhotoData,
     obs: document.getElementById("eqObs").value,
-    data:
-      document.getElementById("eqData").value ||
-      new Date().toISOString().split("T")[0],
+    data: document.getElementById("eqData").value || new Date().toISOString().split("T")[0],
     valor: parseFloat(document.getElementById("eqValor").value) || 0,
     epanelId: "",
     sincronizado: false,
   };
 
+  const ok = await dbSalvarEquipamento(eq);
+  if (!ok) return;
+
   if (editId) {
     const idx = equipamentos.findIndex((e) => e.id === editId);
-    if (idx >= 0) equipamentos[idx] = { ...equipamentos[idx], ...data };
+    if (idx >= 0) equipamentos[idx] = eq;
   } else {
-    equipamentos.unshift({ id: "eq_" + Date.now(), ...data });
+    equipamentos.unshift(eq);
   }
 
   closeModal("equipamento");

@@ -973,7 +973,13 @@
     </div>
 
     <!-- ========== SCRIPTS ========== -->
-    <!-- Dados -->
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <!-- Supabase client + CRUD -->
+    <script src="src/js/supabase.js"></script>
+
+    <!-- Constantes (TIPOS, STATUS, TIPO_ICON) — sem os arrays de dados -->
     <script src="data/dados.js"></script>
 
     <!-- Utilitários -->
@@ -1064,8 +1070,15 @@
       }
 
       populateSelects();
-      renderDashboard();
-      renderEquipamentos();
+
+      // ---- Init assíncrono — carrega dados do Supabase ----
+      async function init() {
+        await carregarDados();
+        populateSelects();
+        renderDashboard();
+        renderEquipamentos();
+      }
+      init();
 
       // ---- Menu mobile ----
       function openSidebar() {

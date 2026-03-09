@@ -99,16 +99,14 @@ function renderUsuarios() {
 }
 
 // ---- Remover equipamento de um aluno direto do card ----
-function removerEqDoAluno(eqId, uid) {
+async function removerEqDoAluno(eqId, uid) {
   const eq = equipamentos.find(x => x.id === eqId);
   if (!eq) return;
   if (!confirm(`Remover "${eq.nome}" de ${getUsuario(uid)?.nome}?`)) return;
-  eq.usuario = "";
-  eq.status  = "disponivel";
-  movimentacoes.unshift({
-    id: "mov_" + Date.now(), eqId, uid,
-    tipo: "devolucao", data: new Date().toISOString(), resp: "Sistema",
-  });
+  const ok = await dbAtualizarCampoEq(eqId, { usuario: "", status: "disponivel" });
+  if (!ok) return;
+  const mov = { id: "mov_" + Date.now(), eqId, uid, tipo: "devolucao", data: new Date().toISOString(), resp: "Sistema" };
+  await dbRegistrarMovimentacao(mov);
   renderUsuarios();
   renderDashboard();
   showToast(`↩ ${eq.nome} devolvido`);
@@ -176,16 +174,14 @@ function filtrarAddEq(input) {
   });
 }
 
-function confirmarAddEq(uid, eqId) {
+async function confirmarAddEq(uid, eqId) {
   const eq = equipamentos.find(x => x.id === eqId);
   const u  = getUsuario(uid);
   if (!eq || !u) return;
-  eq.usuario = uid;
-  eq.status  = "em_uso";
-  movimentacoes.unshift({
-    id: "mov_" + Date.now(), eqId, uid,
-    tipo: "emprestimo", data: new Date().toISOString(), resp: "Sistema",
-  });
+  const ok = await dbAtualizarCampoEq(eqId, { usuario: uid, status: "em_uso" });
+  if (!ok) return;
+  const mov = { id: "mov_" + Date.now(), eqId, uid, tipo: "emprestimo", data: new Date().toISOString(), resp: "Sistema" };
+  await dbRegistrarMovimentacao(mov);
   document.getElementById("addEqModal")?.remove();
   renderUsuarios();
   renderDashboard();
@@ -270,13 +266,18 @@ function toggleKit(el) {
   }
 }
 
-function salvarKit(uid) {
+async function salvarKit(uid) {
   const modal = document.getElementById("kitModal");
-  equipamentos.forEach(e => { if (e.usuario === uid) { e.usuario = ""; e.status = "disponivel"; } });
-  modal.querySelectorAll('[data-sel="true"]').forEach(el => {
-    const eq = equipamentos.find(x => x.id === el.dataset.eqid);
-    if (eq) { eq.usuario = uid; eq.status = "em_uso"; }
+  // Devolver todos os que estavam com este aluno
+  const promises = [];
+  equipamentos.forEach(e => {
+    if (e.usuario === uid) promises.push(dbAtualizarCampoEq(e.id, { usuario: "", status: "disponivel" }));
   });
+  // Atribuir os selecionados
+  modal.querySelectorAll('[data-sel="true"]').forEach(el => {
+    promises.push(dbAtualizarCampoEq(el.dataset.eqid, { usuario: uid, status: "em_uso" }));
+  });
+  await Promise.all(promises);
   modal.remove();
   renderUsuarios();
   renderDashboard();
@@ -284,19 +285,23 @@ function salvarKit(uid) {
 }
 
 // ---- Salvar Aluno (novo) ----
-function salvarUsuario() {
+async function salvarUsuario() {
   const nome  = document.getElementById("uNome").value.trim();
   const email = document.getElementById("uEmail").value.trim();
   if (!nome || !email) { alert("Nome e e-mail são obrigatórios."); return; }
 
-  usuarios.push({
+  const usr = {
     id:      "usr_" + Date.now(),
     nome, email,
     tel:     document.getElementById("uTel").value,
     unidade: document.getElementById("uUnidade").value,
     turma:   document.getElementById("uTurma").value,
     ativo:   true,
-  });
+  };
+
+  const ok = await dbSalvarUsuario(usr);
+  if (!ok) return;
+  usuarios.push(usr);
 
   closeModal("usuario");
   renderUsuarios();
