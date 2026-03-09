@@ -1,0 +1,145 @@
+@startuml ELITI_Patrimonio
+
+!theme carbon-gray
+skinparam backgroundColor #0a0a0a
+skinparam defaultFontName Inter
+skinparam defaultFontSize 12
+
+skinparam class {
+  BackgroundColor #1a1a1a
+  BorderColor #F97316
+  FontColor #F5F5F5
+  HeaderBackgroundColor #F97316
+  HeaderFontColor #0a0a0a
+  HeaderFontStyle bold
+}
+
+skinparam arrow {
+  Color #F97316
+  FontColor #aaaaaa
+  FontSize 11
+}
+
+skinparam note {
+  BackgroundColor #1a1a1a
+  BorderColor #333333
+  FontColor #aaaaaa
+}
+
+' =============================================
+'  ENTIDADES
+' =============================================
+
+entity "unidades" as UN {
+  * id : text <<PK>>
+  --
+  * nome : text
+  endereco : text
+  cidade : text
+  cor : text
+  ativa : boolean
+  created_at : timestamptz
+}
+
+entity "usuarios" as USR {
+  * id : text <<PK>>
+  --
+  * nome : text
+  email : text
+  tel : text
+  turma : text
+  unidade : text <<FK>>
+  ativo : boolean
+  obs : text
+  created_at : timestamptz
+}
+
+entity "equipamentos" as EQ {
+  * id : text <<PK>>
+  --
+  * nome : text
+  tipo : text
+  status : text
+  marca : text
+  modelo : text
+  serie : text
+  patrimonio : text
+  unidade : text <<FK>>
+  usuario : text <<FK>>
+  foto : text
+  obs : text
+  data : text
+  valor : numeric
+  epanel_id : text
+  sincronizado : boolean
+  created_at : timestamptz
+  updated_at : timestamptz
+}
+
+entity "movimentacoes" as MOV {
+  * id : text <<PK>>
+  --
+  eq_id : text <<FK>>
+  uid : text <<FK>>
+  tipo : text
+  data : timestamptz
+  resp : text
+  obs : text
+}
+
+' =============================================
+'  RELACIONAMENTOS
+' =============================================
+
+UN ||--o{ USR : "possui alunos"
+UN ||--o{ EQ  : "possui equipamentos"
+USR |o--o{ EQ  : "responsável por"
+EQ  ||--o{ MOV : "gera movimentações"
+USR |o--o{ MOV : "registra movimentações"
+
+' =============================================
+'  NOTAS
+' =============================================
+
+note right of EQ
+  status pode ser:
+  • disponivel
+  • em_uso
+  • manutencao
+  • descartado
+end note
+
+note right of MOV
+  tipo pode ser:
+  • emprestimo
+  • devolucao
+  • manutencao
+end note
+
+note bottom of UN
+  5 unidades ativas:
+  u1 = ELITI LAB
+  u2 = ELITI PRO
+  u3 = ELITI DAY
+  u4 = ELITI KIDS
+  u5 = ELITI 50+
+end note
+
+note bottom of USR
+  66 alunos cadastrados
+  distribuídos entre as 5 unidades
+end note
+
+' =============================================
+'  LEGENDA
+' =============================================
+
+legend right
+  |= Símbolo |= Significado |
+  | <<PK>>   | Chave Primária |
+  | <<FK>>   | Chave Estrangeira |
+  | ||--o{   | Um para Muitos |
+  | |o--o{   | Zero ou Um para Muitos |
+endlegend
+
+@enduml
