@@ -26,9 +26,20 @@ function renderEquipamentos() {
   document.getElementById("equipGrid").innerHTML =
     list
       .map((e) => {
-        const u = getUsuario(e.usuario);
+        const u  = getUsuario(e.usuario);
         const un = getUnidade(e.unidade);
         const st = STATUS[e.status];
+
+        // Dados técnicos — só mostra o que está preenchido
+        const temPatrimonio = e.patrimonio && e.patrimonio !== "PAT-001" && e.patrimonio !== "";
+        const temSerie      = e.serie && e.serie.trim() !== "";
+        const temMarca      = (e.marca || "") + " " + (e.modelo || "");
+
+        const dadosTecnicos = [
+          temPatrimonio ? `<span title="Patrimônio" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🏷</span>${e.patrimonio}</span>` : `<span style="color:#EF4444;opacity:0.8" title="Sem etiqueta">🏷 Sem patrimônio</span>`,
+          temSerie      ? `<span title="Número de Série" style="display:inline-flex;align-items:center;gap:4px"><span style="opacity:0.5">🔢</span>${e.serie}</span>` : `<span style="color:var(--t3)" title="Sem série">🔢 —</span>`,
+        ].join("  ");
+
         return `
       <div class="card equip-card">
         <div class="equip-photo" style="${e.foto ? `background:url(${e.foto}) center/cover` : ""}">
@@ -37,35 +48,52 @@ function renderEquipamentos() {
           ${e.sincronizado ? '<div class="eq-epanel-pos">EPANEL ✓</div>' : ""}
         </div>
         <div class="equip-body">
-          <div class="equip-name">${e.nome}</div>
-          <div class="equip-code">${e.patrimonio} · ${e.marca} ${e.modelo}</div>
-          <hr style="margin:10px 0;border-color:rgba(255,255,255,0.06)">
+          <div class="equip-name">${e.nome || '<span style="color:var(--t3);font-style:italic">Sem nome</span>'}</div>
 
-          <!-- Bloco responsável — clicável para troca rápida -->
+          <!-- Marca + Modelo -->
+          <div class="equip-code" style="margin-bottom:6px">
+            ${e.marca ? `${e.marca}${e.modelo ? " · " + e.modelo : ""}` : '<span style="color:var(--t3);font-size:11px;font-style:italic">Marca/modelo não informados</span>'}
+          </div>
+
+          <!-- Dados técnicos: patrimônio e série com edição rápida -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);flex:1;line-height:1.8">
+              ${dadosTecnicos}
+            </div>
+            <button onclick="editarDadosTecnicos('${e.id}')"
+              title="Editar patrimônio, série e modelo"
+              style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:11px;color:var(--t3);white-space:nowrap;flex-shrink:0"
+              onmouseover="this.style.background='rgba(249,115,22,0.12)';this.style.color='var(--orange)'"
+              onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='var(--t3)'">✎ Editar</button>
+          </div>
+
+          <hr style="margin:8px 0;border-color:rgba(255,255,255,0.06)">
+
+          <!-- Responsável -->
           <div onclick="abrirTrocaResponsavel('${e.id}')"
             title="Clique para trocar responsável"
             style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:7px 9px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);cursor:pointer;transition:background 0.15s"
             onmouseover="this.style.background='rgba(249,115,22,0.07)'"
             onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-            ${
-              u
-                ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
+            ${u
+              ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">${u.nome[0]}</div>
                  <div style="flex:1;min-width:0">
                    <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.nome}</div>
                    <div style="font-size:10px;color:var(--t3)">👤 Responsável · clique p/ trocar</div>
                  </div>`
-                : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">➕</div>
+              : `<div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">➕</div>
                  <div style="font-size:12px;color:var(--t3)">Sem responsável — clique p/ atribuir</div>`
             }
             <span style="font-size:14px;opacity:0.4">✎</span>
           </div>
 
-          <div style="font-size:11px;color:var(--t3);margin-bottom:${e.obs ? "5px" : "0"}">📍 ${un?.nome.split("—")[0].trim()}</div>
+          <div style="font-size:11px;color:var(--t3)">📍 ${un?.nome.split("—")[0].trim() || "—"}</div>
           ${e.obs ? `<div style="font-size:11px;color:var(--t3);padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:6px;margin-top:6px">${e.obs}</div>` : ""}
-          ${e.valor ? `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);margin-top:6px">R$ ${e.valor.toLocaleString("pt-BR")}</div>` : ""}
-          <div style="display:flex;gap:7px;margin-top:12px">
+          ${e.valor ? `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);margin-top:5px">R$ ${e.valor.toLocaleString("pt-BR")}</div>` : ""}
+
+          <div style="display:flex;gap:7px;margin-top:10px">
             ${u ? `<button class="btn btn-ghost btn-sm" style="color:#EF4444;border-color:rgba(239,68,68,0.25)" onclick="devolverEquipamento('${e.id}')">↩ Devolver</button>` : ""}
-            <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="editEquipamento('${e.id}')">✎ Editar</button>
+            <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="editEquipamento('${e.id}')">⚙ Completo</button>
             <button class="btn btn-danger btn-sm" onclick="deleteEquipamento('${e.id}')">🗑</button>
           </div>
         </div>
@@ -102,6 +130,102 @@ function devolverEquipamento(id) {
   renderEquipamentos();
   renderDashboard();
   showToast(`↩ ${e.nome} devolvido e disponível!`);
+}
+
+// ---- Edição rápida de dados técnicos (patrimônio, série, modelo/marca) ----
+function editarDadosTecnicos(eqId) {
+  const e = equipamentos.find((x) => x.id === eqId);
+  if (!e) return;
+
+  const html = `
+    <div class="modal-bg" id="dadosTecModal" onclick="this===event.target&&fecharDadosTecModal()" style="display:flex">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-head">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">
+            🏷 Dados Técnicos — ${e.nome}
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="fecharDadosTecModal()" style="padding:6px">✕</button>
+        </div>
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+          <div style="font-size:12px;color:var(--t3);padding:10px 12px;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.15);border-radius:8px;line-height:1.5">
+            Preencha os dados técnicos deste equipamento. Esses dados são essenciais para o controle de patrimônio.
+          </div>
+
+          <div>
+            <div class="label">🏷 Etiqueta de Patrimônio</div>
+            <input class="input" id="dtPatrimonio"
+              placeholder="Ex: ELITI-0042 ou PAT-2024-001"
+              value="${e.patrimonio || ""}"
+              style="font-family:'JetBrains Mono',monospace">
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">Código da etiqueta colada no equipamento</div>
+          </div>
+
+          <div>
+            <div class="label">🔢 Número de Série</div>
+            <input class="input" id="dtSerie"
+              placeholder="Ex: SN5CG1234ABC ou 5CD12345TF"
+              value="${e.serie || ""}"
+              style="font-family:'JetBrains Mono',monospace">
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">Geralmente embaixo do equipamento ou nas configurações do sistema</div>
+          </div>
+
+          <div>
+            <div class="label">🖥 Marca</div>
+            <input class="input" id="dtMarca"
+              placeholder="Ex: Dell, Apple, Lenovo, HP..."
+              value="${e.marca || ""}">
+          </div>
+
+          <div>
+            <div class="label">📋 Modelo</div>
+            <input class="input" id="dtModelo"
+              placeholder="Ex: Inspiron 15 3511, MacBook Air M1..."
+              value="${e.modelo || ""}">
+          </div>
+
+          <div style="display:flex;gap:10px;padding-top:4px">
+            <button class="btn btn-ghost" style="flex:1" onclick="fecharDadosTecModal()">Cancelar</button>
+            <button class="btn btn-primary" style="flex:2" onclick="salvarDadosTecnicos('${e.id}')">✓ Salvar Dados Técnicos</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+  document.getElementById("dtPatrimonio").focus();
+
+  // Salvar com Enter no último campo
+  document.getElementById("dtModelo").addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") salvarDadosTecnicos(eqId);
+  });
+}
+
+function fecharDadosTecModal() {
+  document.getElementById("dadosTecModal")?.remove();
+}
+
+function salvarDadosTecnicos(eqId) {
+  const e = equipamentos.find((x) => x.id === eqId);
+  if (!e) return;
+
+  const patrimonio = document.getElementById("dtPatrimonio").value.trim();
+  const serie      = document.getElementById("dtSerie").value.trim();
+  const marca      = document.getElementById("dtMarca").value.trim();
+  const modelo     = document.getElementById("dtModelo").value.trim();
+
+  if (!patrimonio && !serie && !marca && !modelo) {
+    showToast("⚠ Preencha ao menos um campo antes de salvar.");
+    return;
+  }
+
+  e.patrimonio = patrimonio || e.patrimonio;
+  e.serie      = serie;
+  e.marca      = marca;
+  e.modelo     = modelo;
+
+  fecharDadosTecModal();
+  renderEquipamentos();
+  showToast(`✓ Dados técnicos de "${e.nome}" salvos!`);
 }
 
 // ---- Troca rápida de responsável ----
