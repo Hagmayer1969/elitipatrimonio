@@ -5,11 +5,11 @@
 
 -- ---- Unidades ----
 insert into unidades (id, nome, endereco, cidade, cor, ativa) values
-  ('u1', 'ELITI LAB — Cachoeira do Bom Jesus',  'Rua Leonel Pereira, 1728',  'Florianópolis - SC', '#F97316', true),
-  ('u2', 'ELITI PRO — Centro',                   'Rua Felipe Schmidt, 515',   'Florianópolis - SC', '#3B82F6', true),
-  ('u3', 'ELITI DAY — Palhoça',                  'Av. Caminho Novo, 890',     'Palhoça - SC',       '#10B981', true),
-  ('u4', 'ELITI KIDS — Tapera',                  'Rua das Palmeiras, 200',    'Florianópolis - SC', '#8B5CF6', true),
-  ('u5', 'ELITI 50+ — Cachoeira do Bom Jesus',   'Rua Leonel Pereira, 1728',  'Florianópolis - SC', '#EC4899', true)
+  ('u1', 'ELITI LAB — Cachoeira do Bom Jesus',  'R. Leonel Pereira, 604 - Cachoeira do Bom Jesus',              'Florianópolis - SC, 88056-300', '#F97316', true),
+  ('u2', 'ELITI PRO — Canasvieiras',             'Av. Luiz Boiteux Piazza, 1380 - Canasvieiras',                 'Florianópolis - SC, 88054-700', '#3B82F6', true),
+  ('u3', 'ELITI DAY — Canasvieiras',             'Av. Luiz Boiteux Piazza, 1380 - Canasvieiras',                 'Florianópolis - SC, 88054-700', '#10B981', true),
+  ('u4', 'ELITI KIDS — Ingleses',                'Vila Esperança - Ingleses',                                    'Florianópolis - SC',            '#8B5CF6', true),
+  ('u5', 'ELITI 50+ — Canasvieiras',             'Av. Luiz Boiteux Piazza, 1380 - Canasvieiras',                 'Florianópolis - SC, 88054-700', '#EC4899', true)
 on conflict (id) do nothing;
 
 -- ---- Usuários (Alunos) ----
