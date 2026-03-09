@@ -41,7 +41,11 @@ function renderUsuarios() {
               <span style="font-size:16px;flex-shrink:0">${TIPO_ICON[e.tipo] || "📦"}</span>
               <div style="flex:1;min-width:0">
                 <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.nome}</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)">${e.patrimonio}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
+                  ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="color:#EF4444;opacity:0.7">🏷 Sem patrimônio</span>'}
+                  ${e.serie ? ` · 🔢 ${e.serie}` : ""}
+                  ${(e.marca || e.modelo) ? `<br>${e.marca || ""} ${e.modelo || ""}`.trim() : ""}
+                </div>
               </div>
               <button onclick="removerEqDoAluno('${e.id}','${u.id}')"
                 title="Remover deste aluno"
@@ -146,7 +150,11 @@ function adicionarEqAoAluno(uid) {
                 <span style="font-size:22px;flex-shrink:0">${TIPO_ICON[e.tipo] || "📦"}</span>
                 <div style="flex:1;min-width:0">
                   <div style="font-size:13px;font-weight:500">${e.nome}${jaAtribuido ? " ✓" : ""}</div>
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)">${e.patrimonio} · ${e.marca}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
+                    ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="opacity:0.5">🏷 Sem patrimônio</span>'}
+                    ${e.serie ? ` · 🔢 ${e.serie}` : ""}
+                    ${(e.marca || e.modelo) ? `<br>${(e.marca + " " + (e.modelo||"" )).trim()}` : ""}
+                  </div>
                 </div>
                 <span class="badge" style="color:${jaAtribuido ? "var(--orange)" : "var(--green)"};
                   background:${jaAtribuido ? "rgba(249,115,22,0.1)" : "rgba(16,185,129,0.1)"}">
@@ -213,7 +221,11 @@ function openKitModal(uid) {
                 <span style="font-size:22px">${TIPO_ICON[e.tipo] || "📦"}</span>
                 <div style="flex:1">
                   <div style="font-size:13px;font-weight:500">${e.nome}</div>
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)">${e.patrimonio} · ${e.marca}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
+                    ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="opacity:0.5">🏷 Sem patrimônio</span>'}
+                    ${e.serie ? ` · 🔢 ${e.serie}` : ""}
+                    ${(e.marca || e.modelo) ? `<br>${(e.marca + " " + (e.modelo||"" )).trim()}` : ""}
+                  </div>
                 </div>
                 <div style="width:20px;height:20px;border-radius:5px;flex-shrink:0;
                   border:2px solid ${sel ? "var(--orange)" : "rgba(255,255,255,0.2)"};
@@ -386,7 +398,11 @@ function openKitModal(uid) {
                   <span style="font-size:20px">${TIPO_ICON[e.tipo] || "📦"}</span>
                   <div style="flex:1">
                     <div style="font-size:13px;font-weight:500">${e.nome}</div>
-                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)">${e.patrimonio}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);line-height:1.6">
+                      ${e.patrimonio ? `🏷 ${e.patrimonio}` : '<span style="opacity:0.5">🏷 Sem patrimônio</span>'}
+                      ${e.serie ? ` · 🔢 ${e.serie}` : ""}
+                      ${(e.marca || e.modelo) ? `<br>${(e.marca + " " + (e.modelo||"")).trim()}` : ""}
+                    </div>
                   </div>
                   <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${sel ? "var(--orange)" : "rgba(255,255,255,0.2)"};background:${sel ? "var(--orange)" : "transparent"};display:flex;align-items:center;justify-content:center;font-size:11px">${sel ? "✓" : ""}</div>
                 </div>`;
