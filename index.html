@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ELITI — Patrimônio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="src/css/styles.css" />
+  </head>
+  <body>
+    <!-- Overlay para fechar sidebar em mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="app">
+      <!-- ========== SIDEBAR ========== -->
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="brand-logo">ELITI</div>
+          <div class="brand-sub">Gestão de Patrimônio</div>
+        </div>
+
+        <nav class="nav">
+          <div class="nav-section">Principal</div>
+          <div class="nav-item active" onclick="showPage('dashboard', this)">
+            <span class="nav-icon">◈</span> Dashboard
+            <span class="nav-dot"></span>
+          </div>
+
+          <div class="nav-section">Gestão</div>
+          <div class="nav-item" onclick="showPage('equipamentos', this)">
+            <span class="nav-icon">💻</span> Equipamentos
+            <span class="nav-dot"></span>
+          </div>
+          <div class="nav-item" onclick="showPage('usuarios', this)">
+            <span class="nav-icon">👤</span> Alunos
+            <span class="nav-dot"></span>
+          </div>
+          <div class="nav-item" onclick="showPage('unidades', this)">
+            <span class="nav-icon">🏢</span> Unidades
+            <span class="nav-dot"></span>
+          </div>
+
+          <div class="nav-section">Operações</div>
+          <div class="nav-item" onclick="showPage('movimentacoes', this)">
+            <span class="nav-icon">↔</span> Movimentações
+            <span class="nav-dot"></span>
+          </div>
+          <div class="nav-item" onclick="showPage('reconciliacao', this)">
+            <span class="nav-icon">⟳</span> Reconciliação
+            <span class="nav-dot"></span>
+          </div>
+        </nav>
+
+        <div
+          style="
+            padding: 14px 18px;
+            border-top: 1px solid var(--border);
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: var(--t3);
+          "
+          id="clock"
+        ></div>
+      </aside>
+
+      <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+      <main class="main">
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Dashboard</div>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openModal('movimentacao')"
+            >
+              + Movimentação
+            </button>
+          </div>
+          <div class="content">
+            <div class="dash-top-grid"
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+                margin-bottom: 18px;
+              "
+            >
+              <!-- KPIs rápidos -->
+              <div class="card" style="padding:22px;grid-column:1/-1">
+                <div id="dashKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px"></div>
+              </div>
+              <div class="card" style="padding: 22px">
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    color: var(--t3);
+                    margin-bottom: 18px;
+                  "
+                >
+                  Equipamentos por Tipo
+                </div>
+                <div id="tipoChart"></div>
+              </div>
+              <div class="card" style="padding: 22px">
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    color: var(--t3);
+                    margin-bottom: 14px;
+                  "
+                >
+                  Unidades
+                </div>
+                <div id="unidadesList"></div>
+              </div>
+            </div>
+            <div class="card" style="padding: 22px">
+              <div
+                style="
+                  font-family: &quot;Syne&quot;, sans-serif;
+                  font-size: 11px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--t3);
+                  margin-bottom: 14px;
+                "
+              >
+                Últimos Registros
+              </div>
+              <table class="data-table" id="recentTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- EQUIPAMENTOS -->
+        <div class="page" id="page-equipamentos">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Equipamentos</div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <span
+                id="eqCount"
+                style="font-size: 12px; color: var(--t3)"
+              ></span>
+              <button
+                class="btn btn-primary btn-sm"
+                onclick="openModal('equipamento')"
+              >
+                + Novo
+              </button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="eq-filters"
+              style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 18px;
+                flex-wrap: wrap;
+              "
+            >
+              <input
+                class="input"
+                id="eqSearch"
+                placeholder="Buscar por nome, código, marca..."
+                style="max-width: 280px"
+                oninput="renderEquipamentos()"
+              />
+              <select
+                class="input"
+                id="eqStatusFilter"
+                style="max-width: 160px"
+                onchange="renderEquipamentos()"
+              >
+                <option value="">Todos os status</option>
+                <option value="disponivel">Disponível</option>
+                <option value="em_uso">Em Uso</option>
+                <option value="manutencao">Manutenção</option>
+                <option value="descartado">Descartado</option>
+              </select>
+              <select
+                class="input"
+                id="eqTipoFilter"
+                style="max-width: 160px"
+                onchange="renderEquipamentos()"
+              >
+                <option value="">Todos os tipos</option>
+                <option value="notebook">💻 Notebook</option>
+                <option value="pc">🖥 PC Desktop</option>
+                <option value="monitor">🖵 Monitor</option>
+                <option value="teclado">⌨ Teclado</option>
+                <option value="mouse">🖱 Mouse</option>
+                <option value="usb_internet">📡 USB Internet</option>
+                <option value="headset">🎧 Headset</option>
+                <option value="webcam">📷 Webcam</option>
+              </select>
+            </div>
+            <div class="equip-grid" id="equipGrid"></div>
+          </div>
+        </div>
+
+        <!-- ALUNOS -->
+        <div class="page" id="page-usuarios">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Alunos</div>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openModal('usuario')"
+            >
+              + Novo Aluno
+            </button>
+          </div>
+          <div class="content">
+            <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
+              <input
+                class="input"
+                id="userSearch"
+                placeholder="Buscar aluno ou turma..."
+                style="max-width: 280px"
+                oninput="renderUsuarios()"
+              />
+              <select class="input" id="userUnitFilter" style="max-width:180px" onchange="renderUsuarios()">
+                <option value="">Todas as unidades</option>
+              </select>
+            </div>
+            <div
+              class="user-grid-wrap"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 14px;
+              "
+              id="userGrid"
+            ></div>
+          </div>
+        </div>
+
+        <!-- UNIDADES -->
+        <div class="page" id="page-unidades">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Unidades</div>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openModal('unidade')"
+            >
+              + Nova Unidade
+            </button>
+          </div>
+          <div class="content">
+            <div
+              class="unit-grid-wrap"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 16px;
+              "
+              id="unitGrid"
+            ></div>
+          </div>
+        </div>
+
+        <!-- MOVIMENTAÇÕES -->
+        <div class="page" id="page-movimentacoes">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Movimentações</div>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openModal('movimentacao')"
+            >
+              + Registrar
+            </button>
+          </div>
+          <div class="content">
+            <div class="card" style="padding: 22px">
+              <div
+                style="
+                  font-family: &quot;Syne&quot;, sans-serif;
+                  font-size: 11px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--t3);
+                  margin-bottom: 14px;
+                "
+              >
+                Histórico
+              </div>
+              <div
+                id="movList"
+                style="display: flex; flex-direction: column"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECONCILIAÇÃO -->
+        <div class="page" id="page-reconciliacao">
+          <div class="topbar">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+              <div class="page-title">Reconciliação ePainel</div>
+            </div>
+          </div>
+          <div class="content">
+            <!-- KPIs de reconciliação -->
+            <div id="reconcStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px"></div>
+
+            <div class="reconc-grid"
+              style="display: grid; grid-template-columns: 1fr 360px; gap: 18px"
+            >
+              <!-- Vinculação manual -->
+              <div class="card" style="padding: 26px">
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    color: var(--t3);
+                    margin-bottom: 18px;
+                  "
+                >
+                  Vincular Equipamento ao ePainel
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px">
+                  <div>
+                    <div class="label">Equipamento</div>
+                    <select class="input" id="reconcEq">
+                      <option value="">Selecione...</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div class="label">ID no ePainel</div>
+                    <input class="input" id="reconcId" placeholder="EP001" />
+                  </div>
+                  <button
+                    class="btn btn-primary"
+                    style="justify-content: center"
+                    onclick="vincularEpanel()"
+                  >
+                    ⟳ Vincular
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sincronização em lote -->
+              <div class="card" style="padding: 26px">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <span style="font-size: 18px">⟳</span>
+                  <div
+                    style="
+                      font-family: &quot;Syne&quot;, sans-serif;
+                      font-size: 13px;
+                      font-weight: 700;
+                    "
+                  >
+                    Sincronização em Lote
+                  </div>
+                </div>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--t2);
+                    margin-bottom: 18px;
+                    line-height: 1.6;
+                  "
+                >
+                  Processa todos os equipamentos com ID do ePainel e atualiza o
+                  status de sincronização automaticamente.
+                </p>
+                <button
+                  class="btn btn-primary"
+                  style="width: 100%; justify-content: center"
+                  onclick="sincronizarLote(this)"
+                >
+                  ⟳ Sincronizar Agora
+                </button>
+                <hr
+                  style="
+                    margin: 18px 0;
+                    border-color: rgba(255, 255, 255, 0.06);
+                  "
+                />
+                <div
+                  style="
+                    font-family: &quot;Syne&quot;, sans-serif;
+                    font-size: 10px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    color: var(--t3);
+                    margin-bottom: 10px;
+                  "
+                >
+                  Com ID Cadastrado
+                </div>
+                <div id="sincList"></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 18px; padding: 26px">
+              <div
+                style="
+                  font-family: &quot;Syne&quot;, sans-serif;
+                  font-size: 11px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--t3);
+                  margin-bottom: 18px;
+                "
+              >
+                Equipamentos sem Conciliação
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="reconcTable"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ========== MODAIS ========== -->
+
+    <!-- Modal Equipamento -->
+    <div id="modal-equipamento" class="modal-bg" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <div
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 17px;
+              font-weight: 700;
+            "
+          >
+            Novo Equipamento
+          </div>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="closeModal('equipamento')"
+            style="padding: 6px"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div
+            class="photo-zone"
+            onclick="document.getElementById('fotoInput').click()"
+            id="photoZone"
+          >
+            <div style="text-align: center; color: var(--t3)">
+              <div style="font-size: 28px; margin-bottom: 8px; opacity: 0.5">
+                📷
+              </div>
+              <div style="font-size: 13px">Clique para adicionar foto</div>
+              <div style="font-size: 11px; margin-top: 2px">
+                JPG, PNG ou WebP
+              </div>
+            </div>
+          </div>
+          <input
+            type="file"
+            id="fotoInput"
+            accept="image/*"
+            style="display: none"
+            onchange="previewFoto(event)"
+          />
+          <div class="grid-2">
+            <div class="col-full">
+              <div class="label">Nome / Descrição *</div>
+              <input
+                class="input"
+                id="eqNome"
+                placeholder="Ex: Notebook Dell Inspiron 15"
+              />
+            </div>
+            <div>
+              <div class="label">Tipo *</div>
+              <select class="input" id="eqTipo">
+                <option value="notebook">💻 Notebook</option>
+                <option value="pc">🖥 PC Desktop</option>
+                <option value="monitor">🖵 Monitor</option>
+                <option value="teclado">⌨ Teclado</option>
+                <option value="mouse">🖱 Mouse</option>
+                <option value="usb_internet">📡 USB Internet</option>
+                <option value="headset">🎧 Headset</option>
+                <option value="webcam">📷 Webcam</option>
+                <option value="outro">📦 Outro</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Status</div>
+              <select class="input" id="eqStatus">
+                <option value="disponivel">Disponível</option>
+                <option value="em_uso">Em Uso</option>
+                <option value="manutencao">Manutenção</option>
+                <option value="descartado">Descartado</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Marca *</div>
+              <input
+                class="input"
+                id="eqMarca"
+                placeholder="Dell, Lenovo, Samsung..."
+              />
+            </div>
+            <div>
+              <div class="label">Modelo</div>
+              <input
+                class="input"
+                id="eqModelo"
+                placeholder="Inspiron 15 3511"
+              />
+            </div>
+            <div>
+              <div class="label">Número de Série</div>
+              <input class="input" id="eqSerie" placeholder="SN12345678" />
+            </div>
+            <div>
+              <div class="label">Código Patrimônio *</div>
+              <input class="input" id="eqPatrimonio" placeholder="PAT-001" />
+            </div>
+            <div>
+              <div class="label">Unidade</div>
+              <select class="input" id="eqUnidade" onchange="filtrarAlunosPorUnidade()">
+                <option value="">Carregando...</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Responsável (Aluno)</div>
+              <select class="input" id="eqUsuario">
+                <option value="">Sem responsável</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Data de Aquisição</div>
+              <input class="input" id="eqData" type="date" />
+            </div>
+            <div>
+              <div class="label">Valor (R$)</div>
+              <input
+                class="input"
+                id="eqValor"
+                type="number"
+                placeholder="0,00"
+              />
+            </div>
+            <div class="col-full">
+              <div class="label">Observações</div>
+              <textarea
+                class="input"
+                id="eqObs"
+                rows="3"
+                placeholder="Estado do equipamento, histórico, etc."
+                style="resize: vertical"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('equipamento')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="salvarEquipamento()">
+            ✓ Cadastrar Equipamento
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Aluno -->
+    <div id="modal-usuario" class="modal-bg" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <div
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 17px;
+              font-weight: 700;
+            "
+          >
+            Novo Aluno
+          </div>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="closeModal('usuario')"
+            style="padding: 6px"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="grid-2">
+            <div class="col-full">
+              <div class="label">Nome Completo *</div>
+              <input class="input" id="uNome" placeholder="Nome do aluno" />
+            </div>
+            <div>
+              <div class="label">E-mail *</div>
+              <input
+                class="input"
+                id="uEmail"
+                type="email"
+                placeholder="aluno@eliti.org"
+              />
+            </div>
+            <div>
+              <div class="label">Telefone</div>
+              <input class="input" id="uTel" placeholder="(48) 9 9999-9999" />
+            </div>
+            <div>
+              <div class="label">Unidade</div>
+              <select class="input" id="uUnidade">
+                <option value="">Carregando...</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Turma</div>
+              <input
+                class="input"
+                id="uTurma"
+                placeholder="PRO T18, LAB, EAD..."
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('usuario')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="salvarUsuario()">
+            ✓ Cadastrar Aluno
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Unidade -->
+    <div id="modal-unidade" class="modal-bg" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <div
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 17px;
+              font-weight: 700;
+            "
+          >
+            Nova Unidade
+          </div>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="closeModal('unidade')"
+            style="padding: 6px"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <div>
+              <div class="label">Nome da Unidade *</div>
+              <input
+                class="input"
+                id="unNome"
+                placeholder="ELITI LAB - Cachoeira do Bom Jesus"
+              />
+            </div>
+            <div>
+              <div class="label">Endereço</div>
+              <input
+                class="input"
+                id="unEnd"
+                placeholder="Rua Leonel Pereira, 1728"
+              />
+            </div>
+            <div>
+              <div class="label">Cidade - Estado</div>
+              <input
+                class="input"
+                id="unCidade"
+                placeholder="Florianópolis - SC"
+              />
+            </div>
+            <div style="display: flex; gap: 14px; align-items: flex-end">
+              <div style="flex: 1">
+                <div class="label">Cor de Identificação</div>
+                <input
+                  class="input"
+                  id="unCor"
+                  type="color"
+                  value="#F97316"
+                  style="height: 40px; padding: 4px 8px; cursor: pointer"
+                />
+              </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding-bottom: 2px;
+                "
+              >
+                <input type="checkbox" id="unAtiva" checked />
+                <label
+                  for="unAtiva"
+                  style="font-size: 13px; color: var(--t2); cursor: pointer"
+                  >Unidade ativa</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('unidade')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="salvarUnidade()">
+            ✓ Cadastrar Unidade
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Movimentação -->
+    <div id="modal-movimentacao" class="modal-bg" style="display: none">
+      <div class="modal">
+        <div class="modal-head">
+          <div
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 17px;
+              font-weight: 700;
+            "
+          >
+            Registrar Movimentação
+          </div>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick="closeModal('movimentacao')"
+            style="padding: 6px"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="display: flex; gap: 10px; margin-bottom: 18px">
+            <button
+              id="movTipoEmp"
+              class="btn"
+              style="
+                flex: 1;
+                justify-content: center;
+                background: rgba(249, 115, 22, 0.1);
+                color: var(--orange);
+                border: 1px solid rgba(249, 115, 22, 0.35);
+              "
+              onclick="setMovTipo('emprestimo')"
+            >
+              Empréstimo
+            </button>
+            <button
+              id="movTipoDev"
+              class="btn btn-ghost"
+              style="flex: 1; justify-content: center"
+              onclick="setMovTipo('devolucao')"
+            >
+              Devolução
+            </button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px">
+            <div>
+              <div class="label">Equipamento</div>
+              <select class="input" id="movEq">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div id="movUsuarioDiv">
+              <div class="label">Responsável (Aluno)</div>
+              <select class="input" id="movUsuario">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div>
+              <div class="label">Registrado por</div>
+              <input
+                class="input"
+                id="movResp"
+                placeholder="Nome do responsável"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('movimentacao')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="salvarMovimentacao()">
+            ✓ Registrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <!-- Dados -->
+    <script src="data/dados.js"></script>
+
+    <!-- Utilitários -->
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/navigation.js"></script>
+    <script src="src/js/modals.js"></script>
+
+    <!-- Páginas -->
+    <script src="src/pages/dashboard.js"></script>
+    <script src="src/pages/equipamentos.js"></script>
+    <script src="src/pages/usuarios.js"></script>
+    <script src="src/pages/unidades.js"></script>
+    <script src="src/pages/movimentacoes.js"></script>
+    <script src="src/pages/reconciliacao.js"></script>
+
+    <!-- Init -->
+    <script>
+      // ---- Popula selects dinâmicos com dados reais ----
+      function populateSelects() {
+        // Selects de unidade (modais equipamento e aluno)
+        ["eqUnidade", "uUnidade"].forEach(selId => {
+          const sel = document.getElementById(selId);
+          if (!sel) return;
+          const current = sel.value;
+          sel.innerHTML = '<option value="">Selecione...</option>' +
+            unidades.map(u => `<option value="${u.id}">${u.nome}</option>`).join("");
+          if (current) sel.value = current;
+        });
+
+        // Select de unidade na página Alunos
+        const unitSel = document.getElementById("userUnitFilter");
+        if (unitSel) {
+          const current = unitSel.value;
+          unitSel.innerHTML = '<option value="">Todas as unidades</option>' +
+            unidades.map(u => `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`).join("");
+          if (current) unitSel.value = current;
+        }
+
+        // Selects de aluno/responsável (modais equipamento e movimentação)
+        const usuarioSelects = [
+          { id: "eqUsuario", emptyLabel: "Sem responsável" },
+          { id: "movUsuario", emptyLabel: "Selecione..." }
+        ];
+        usuarioSelects.forEach(({ id, emptyLabel }) => {
+          const sel = document.getElementById(id);
+          if (!sel) return;
+          const current = sel.value;
+          const sorted = [...usuarios].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+          sel.innerHTML = `<option value="">${emptyLabel}</option>` +
+            sorted.map(u => {
+              const uni = unidades.find(x => x.id === u.unidade);
+              const uniLabel = uni ? ` (${uni.nome.split(" — ")[0]})` : "";
+              return `<option value="${u.id}">${u.nome}${uniLabel}</option>`;
+            }).join("");
+          if (current) sel.value = current;
+        });
+      }
+
+      // ---- Filtra alunos no select do modal de equipamento conforme unidade ----
+      function filtrarAlunosPorUnidade() {
+        const unidadeId = document.getElementById("eqUnidade").value;
+        const sel = document.getElementById("eqUsuario");
+        const lista = unidadeId
+          ? usuarios.filter(u => u.unidade === unidadeId)
+          : usuarios;
+        const sorted = [...lista].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+        sel.innerHTML = '<option value="">Sem responsável</option>' +
+          sorted.map(u => `<option value="${u.id}">${u.nome}</option>`).join("");
+      }
+
+      populateSelects();
+      renderDashboard();
+      renderEquipamentos();
+
+      // ---- Menu mobile ----
+      function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('visible');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('visible');
+        document.body.style.overflow = '';
+      }
+      // Fechar sidebar ao clicar num item de nav em mobile
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          if (window.innerWidth <= 768) closeSidebar();
+        });
+      });
+    </script>
+  </body>
+</html>

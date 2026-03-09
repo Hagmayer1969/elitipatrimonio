@@ -1,0 +1,690 @@
+/* =============================================
+   ELITI PATRIMÔNIO — Estilos Globais
+   ============================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ---- Variáveis ---- */
+:root {
+  --bg: #0a0a0a;
+  --s1: #111111;
+  --s2: #181818;
+  --s3: #222222;
+  --orange: #f97316;
+  --green: #10b981;
+  --t1: #f5f5f5;
+  --t2: #a3a3a3;
+  --t3: #555555;
+  --border: rgba(255, 255, 255, 0.07);
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+/* ---- Layout ---- */
+.app {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--s1);
+}
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+/* ---- Sidebar ---- */
+.brand {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-logo {
+  font-family: "Syne", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--orange);
+}
+.brand-sub {
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.nav {
+  padding: 10px 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+.nav-section {
+  font-family: "Syne", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--t3);
+  padding: 12px 10px 5px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--t2);
+  transition: all 0.15s;
+  margin-bottom: 1px;
+}
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--t1);
+}
+.nav-item.active {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--orange);
+}
+.nav-item.active .nav-dot {
+  background: var(--orange);
+  box-shadow: 0 0 5px var(--orange);
+}
+.nav-icon {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+}
+.nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--t3);
+  margin-left: auto;
+}
+
+/* ---- Topbar ---- */
+.page-title {
+  font-family: "Syne", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: border-color 0.2s;
+}
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Equipamento Card ---- */
+.equip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.equip-card {
+  overflow: hidden;
+}
+.equip-photo {
+  height: 155px;
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.equip-body {
+  padding: 14px 16px 16px;
+}
+.equip-name {
+  font-family: "Syne", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.equip-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--t3);
+}
+.eq-badge-pos {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+.eq-epanel-pos {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ---- Badges / Botões ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: var(--orange);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #ea6a0a;
+}
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--t2);
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--t1);
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+.btn-sm {
+  padding: 5px 11px;
+  font-size: 12px;
+}
+
+/* ---- Inputs ---- */
+.input {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--t1);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input:focus {
+  border-color: rgba(249, 115, 22, 0.5);
+}
+.label {
+  font-size: 11px;
+  color: var(--t3);
+  margin-bottom: 5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.col-full {
+  grid-column: 1 / -1;
+}
+
+/* ---- Modais ---- */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.modal-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.modal-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* ---- Photo Zone ---- */
+.photo-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  overflow: hidden;
+}
+.photo-zone:hover {
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+/* ---- Tabela ---- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: "Syne", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t3);
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ---- Progresso ---- */
+.prog-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ---- Timeline ---- */
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.timeline-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---- Páginas ---- */
+.page {
+  display: none;
+}
+.page.active {
+  display: block;
+}
+
+/* ---- Avatar Aluno ---- */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* ---- Animações ---- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* =============================================
+   RESPONSIVO — TABLET (≤ 1024px)
+   ============================================= */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+  }
+  .content {
+    padding: 18px;
+  }
+  .topbar {
+    padding: 14px 20px;
+  }
+  /* Dashboard: empilha os dois cards de topo */
+  .dash-top-grid {
+    grid-template-columns: 1fr !important;
+  }
+  /* Reconciliação: empilha colunas */
+  .reconc-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =============================================
+   RESPONSIVO — MOBILE (≤ 768px)
+   ============================================= */
+@media (max-width: 768px) {
+
+  /* Body: permite scroll normal em mobile */
+  body {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* App: coluna única, sem overflow oculto */
+  .app {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  /* ---- Sidebar como drawer lateral ---- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    min-width: 260px;
+    height: 100%;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    box-shadow: 4px 0 30px rgba(0,0,0,0.6);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    animation: slideIn 0.28s ease;
+  }
+
+  /* Overlay escuro ao abrir sidebar */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 199;
+    backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* ---- Main: ocupa tudo ---- */
+  .main {
+    width: 100%;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  /* ---- Topbar mobile ---- */
+  .topbar {
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .page-title {
+    font-size: 15px;
+  }
+  /* Botão hambúrguer */
+  .hamburger-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    cursor: pointer;
+    color: var(--t1);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ---- Content ---- */
+  .content {
+    padding: 14px;
+    overflow: visible;
+  }
+
+  /* ---- Página: block sempre (controlado por JS via display) ---- */
+  .page.active {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ---- Dashboard: grids em coluna ---- */
+  .dash-top-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---- Equipamentos: 1 coluna em mobile ---- */
+  .equip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ---- Filtros de equipamentos: coluna ---- */
+  .eq-filters {
+    flex-direction: column !important;
+  }
+  .eq-filters .input {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  /* ---- Alunos grid: 1 coluna ---- */
+  .user-grid-wrap {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---- Unidades grid: 1 coluna ---- */
+  .unit-grid-wrap {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---- Reconciliação: coluna ---- */
+  .reconc-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---- Tabela responsiva: scroll horizontal ---- */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table {
+    min-width: 520px;
+  }
+
+  /* ---- Modal: fullscreen em mobile ---- */
+  .modal-bg {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+  }
+
+  /* ---- Grid 2 colunas → 1 coluna em modais ---- */
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .col-full {
+    grid-column: 1;
+  }
+
+  /* ---- Botões de modal-foot: empilhados ---- */
+  .modal-foot {
+    flex-direction: column-reverse;
+  }
+  .modal-foot .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---- Topbar botão: texto menor ---- */
+  .topbar .btn-sm {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  /* ---- Busca aluno: 100% ---- */
+  #userSearch {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  /* ---- Clock: oculto em mobile ---- */
+  #clock {
+    display: none;
+  }
+}
+
+/* =============================================
+   RESPONSIVO — SMALL MOBILE (≤ 400px)
+   ============================================= */
+@media (max-width: 400px) {
+  .topbar {
+    padding: 10px 12px;
+  }
+  .content {
+    padding: 10px;
+  }
+  .equip-grid {
+    gap: 10px;
+  }
+  .modal-head {
+    padding: 16px 18px;
+  }
+  .modal-body {
+    padding: 16px 18px;
+  }
+  .modal-foot {
+    padding: 14px 18px;
+  }
+}
+
+/* Hambúrguer: oculto em desktop */
+.hamburger-btn {
+  display: none;
+}
