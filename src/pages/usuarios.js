@@ -14,18 +14,23 @@ const AVATAR_COLORS = [
 function renderUsuarios() {
   const busca =
     document.getElementById("userSearch")?.value.toLowerCase() || "";
-  const unitFilter =
-    document.getElementById("userUnitFilter")?.value || "";
+  const unitFilter = document.getElementById("userUnitFilter")?.value || "";
 
   // Popular select de unidade (na primeira chamada)
   const unitSel = document.getElementById("userUnitFilter");
   if (unitSel && unitSel.options.length <= 1) {
-    unitSel.innerHTML = '<option value="">Todas as unidades</option>' +
-      unidades.map(u => `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`).join("");
+    unitSel.innerHTML =
+      '<option value="">Todas as unidades</option>' +
+      unidades
+        .map(
+          (u) => `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`,
+        )
+        .join("");
   }
 
   const list = usuarios.filter((u) => {
-    const matchBusca = !busca ||
+    const matchBusca =
+      !busca ||
       u.nome.toLowerCase().includes(busca) ||
       u.turma.toLowerCase().includes(busca);
     const matchUnit = !unitFilter || u.unidade === unitFilter;

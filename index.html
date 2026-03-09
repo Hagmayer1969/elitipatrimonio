@@ -13,7 +13,11 @@
   </head>
   <body>
     <!-- Overlay para fechar sidebar em mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div
+      class="sidebar-overlay"
+      id="sidebarOverlay"
+      onclick="closeSidebar()"
+    ></div>
 
     <div class="app">
       <!-- ========== SIDEBAR ========== -->
@@ -72,8 +76,14 @@
         <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Dashboard</div>
             </div>
             <button
@@ -84,7 +94,8 @@
             </button>
           </div>
           <div class="content">
-            <div class="dash-top-grid"
+            <div
+              class="dash-top-grid"
               style="
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -93,8 +104,15 @@
               "
             >
               <!-- KPIs rápidos -->
-              <div class="card" style="padding:22px;grid-column:1/-1">
-                <div id="dashKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px"></div>
+              <div class="card" style="padding: 22px; grid-column: 1/-1">
+                <div
+                  id="dashKpis"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                    gap: 14px;
+                  "
+                ></div>
               </div>
               <div class="card" style="padding: 22px">
                 <div
@@ -151,8 +169,14 @@
         <!-- EQUIPAMENTOS -->
         <div class="page" id="page-equipamentos">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Equipamentos</div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center">
@@ -169,7 +193,8 @@
             </div>
           </div>
           <div class="content">
-            <div class="eq-filters"
+            <div
+              class="eq-filters"
               style="
                 display: flex;
                 gap: 10px;
@@ -220,8 +245,14 @@
         <!-- ALUNOS -->
         <div class="page" id="page-usuarios">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Alunos</div>
             </div>
             <button
@@ -232,7 +263,15 @@
             </button>
           </div>
           <div class="content">
-            <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 18px;
+                flex-wrap: wrap;
+                align-items: center;
+              "
+            >
               <input
                 class="input"
                 id="userSearch"
@@ -240,7 +279,12 @@
                 style="max-width: 280px"
                 oninput="renderUsuarios()"
               />
-              <select class="input" id="userUnitFilter" style="max-width:180px" onchange="renderUsuarios()">
+              <select
+                class="input"
+                id="userUnitFilter"
+                style="max-width: 180px"
+                onchange="renderUsuarios()"
+              >
                 <option value="">Todas as unidades</option>
               </select>
             </div>
@@ -259,8 +303,14 @@
         <!-- UNIDADES -->
         <div class="page" id="page-unidades">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Unidades</div>
             </div>
             <button
@@ -286,8 +336,14 @@
         <!-- MOVIMENTAÇÕES -->
         <div class="page" id="page-movimentacoes">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Movimentações</div>
             </div>
             <button
@@ -323,16 +379,49 @@
         <!-- RECONCILIAÇÃO -->
         <div class="page" id="page-reconciliacao">
           <div class="topbar">
-            <div style="display:flex;align-items:center;gap:10px">
-              <button class="hamburger-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
+                class="hamburger-btn"
+                onclick="openSidebar()"
+                title="Menu"
+              >
+                ☰
+              </button>
               <div class="page-title">Reconciliação ePainel</div>
             </div>
           </div>
           <div class="content">
             <!-- KPIs de reconciliação -->
-            <div id="reconcStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px"></div>
+            <div
+              id="reconcStats"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 12px;
+                margin-bottom: 18px;
+              "
+            ></div>
 
-            <div class="reconc-grid"
+            <!-- Importação CSV do ePainel -->
+            <div class="card" style="padding:20px;margin-bottom:18px">
+              <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--t3);margin-bottom:12px">
+                📥 Importar Bens do ePainel (CSV)
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+                <div style="flex:1;min-width:200px">
+                  <div class="label">Arquivo exportado do ePainel</div>
+                  <input type="file" id="epanelCsv" accept=".csv,.xlsx" class="input" style="padding:8px;cursor:pointer" onchange="importarCSVEpanel(this)">
+                </div>
+                <div style="font-size:11px;color:var(--t3);line-height:1.7;padding-top:20px">
+                  No ePainel: <strong style="color:var(--t2)">Bens → Exportar → CSV</strong><br>
+                  Colunas esperadas: <code style="color:var(--orange)">patrimônio, nome, série, responsável</code>
+                </div>
+              </div>
+              <div id="importLog" style="margin-top:10px;font-size:12px;display:none"></div>
+            </div>
+
+            <div
+              class="reconc-grid"
               style="display: grid; grid-template-columns: 1fr 360px; gap: 18px"
             >
               <!-- Vinculação manual -->
@@ -560,7 +649,11 @@
             </div>
             <div>
               <div class="label">Unidade</div>
-              <select class="input" id="eqUnidade" onchange="filtrarAlunosPorUnidade()">
+              <select
+                class="input"
+                id="eqUnidade"
+                onchange="filtrarAlunosPorUnidade()"
+              >
                 <option value="">Carregando...</option>
               </select>
             </div>
@@ -862,12 +955,15 @@
       // ---- Popula selects dinâmicos com dados reais ----
       function populateSelects() {
         // Selects de unidade (modais equipamento e aluno)
-        ["eqUnidade", "uUnidade"].forEach(selId => {
+        ["eqUnidade", "uUnidade"].forEach((selId) => {
           const sel = document.getElementById(selId);
           if (!sel) return;
           const current = sel.value;
-          sel.innerHTML = '<option value="">Selecione...</option>' +
-            unidades.map(u => `<option value="${u.id}">${u.nome}</option>`).join("");
+          sel.innerHTML =
+            '<option value="">Selecione...</option>' +
+            unidades
+              .map((u) => `<option value="${u.id}">${u.nome}</option>`)
+              .join("");
           if (current) sel.value = current;
         });
 
@@ -875,27 +971,38 @@
         const unitSel = document.getElementById("userUnitFilter");
         if (unitSel) {
           const current = unitSel.value;
-          unitSel.innerHTML = '<option value="">Todas as unidades</option>' +
-            unidades.map(u => `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`).join("");
+          unitSel.innerHTML =
+            '<option value="">Todas as unidades</option>' +
+            unidades
+              .map(
+                (u) =>
+                  `<option value="${u.id}">${u.nome.split(" — ")[0]}</option>`,
+              )
+              .join("");
           if (current) unitSel.value = current;
         }
 
         // Selects de aluno/responsável (modais equipamento e movimentação)
         const usuarioSelects = [
           { id: "eqUsuario", emptyLabel: "Sem responsável" },
-          { id: "movUsuario", emptyLabel: "Selecione..." }
+          { id: "movUsuario", emptyLabel: "Selecione..." },
         ];
         usuarioSelects.forEach(({ id, emptyLabel }) => {
           const sel = document.getElementById(id);
           if (!sel) return;
           const current = sel.value;
-          const sorted = [...usuarios].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
-          sel.innerHTML = `<option value="">${emptyLabel}</option>` +
-            sorted.map(u => {
-              const uni = unidades.find(x => x.id === u.unidade);
-              const uniLabel = uni ? ` (${uni.nome.split(" — ")[0]})` : "";
-              return `<option value="${u.id}">${u.nome}${uniLabel}</option>`;
-            }).join("");
+          const sorted = [...usuarios].sort((a, b) =>
+            a.nome.localeCompare(b.nome, "pt-BR"),
+          );
+          sel.innerHTML =
+            `<option value="">${emptyLabel}</option>` +
+            sorted
+              .map((u) => {
+                const uni = unidades.find((x) => x.id === u.unidade);
+                const uniLabel = uni ? ` (${uni.nome.split(" — ")[0]})` : "";
+                return `<option value="${u.id}">${u.nome}${uniLabel}</option>`;
+              })
+              .join("");
           if (current) sel.value = current;
         });
       }
@@ -905,11 +1012,16 @@
         const unidadeId = document.getElementById("eqUnidade").value;
         const sel = document.getElementById("eqUsuario");
         const lista = unidadeId
-          ? usuarios.filter(u => u.unidade === unidadeId)
+          ? usuarios.filter((u) => u.unidade === unidadeId)
           : usuarios;
-        const sorted = [...lista].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
-        sel.innerHTML = '<option value="">Sem responsável</option>' +
-          sorted.map(u => `<option value="${u.id}">${u.nome}</option>`).join("");
+        const sorted = [...lista].sort((a, b) =>
+          a.nome.localeCompare(b.nome, "pt-BR"),
+        );
+        sel.innerHTML =
+          '<option value="">Sem responsável</option>' +
+          sorted
+            .map((u) => `<option value="${u.id}">${u.nome}</option>`)
+            .join("");
       }
 
       populateSelects();
@@ -918,18 +1030,18 @@
 
       // ---- Menu mobile ----
       function openSidebar() {
-        document.getElementById('sidebar').classList.add('open');
-        document.getElementById('sidebarOverlay').classList.add('visible');
-        document.body.style.overflow = 'hidden';
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("sidebarOverlay").classList.add("visible");
+        document.body.style.overflow = "hidden";
       }
       function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').classList.remove('visible');
-        document.body.style.overflow = '';
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("visible");
+        document.body.style.overflow = "";
       }
       // Fechar sidebar ao clicar num item de nav em mobile
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
           if (window.innerWidth <= 768) closeSidebar();
         });
       });

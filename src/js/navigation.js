@@ -24,8 +24,14 @@ function showPage(id, el) {
     // Popular select de equipamentos na tela de movimentações
     const sel = document.getElementById("reconcEq");
     if (sel) {
-      sel.innerHTML = '<option value="">Selecione...</option>' +
-        equipamentos.map(e => `<option value="${e.id}">${e.patrimonio} — ${e.nome}</option>`).join("");
+      sel.innerHTML =
+        '<option value="">Selecione...</option>' +
+        equipamentos
+          .map(
+            (e) =>
+              `<option value="${e.id}">${e.patrimonio} — ${e.nome}</option>`,
+          )
+          .join("");
     }
     renderTimelineMov();
   }
@@ -33,8 +39,14 @@ function showPage(id, el) {
     // Popular select de equipamentos na reconciliação
     const sel = document.getElementById("reconcEq");
     if (sel) {
-      sel.innerHTML = '<option value="">Selecione...</option>' +
-        equipamentos.map(e => `<option value="${e.id}">${e.patrimonio} — ${e.nome}</option>`).join("");
+      sel.innerHTML =
+        '<option value="">Selecione...</option>' +
+        equipamentos
+          .map(
+            (e) =>
+              `<option value="${e.id}">${e.patrimonio} — ${e.nome}</option>`,
+          )
+          .join("");
     }
     renderReconciliacao();
   }
